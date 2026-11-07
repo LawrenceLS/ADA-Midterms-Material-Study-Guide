@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Analysis — Complete Study Guide</title>
+<style>
+  :root {
+    --bg: #0f1221;
+    --card: #1a1f35;
+    --card2: #222844;
+    --text: #e6e9f2;
+    --muted: #a6adc8;
+    --accent: #7c9cff;
+    --accent2: #5be3b3;
+    --warn: #ff6b6b;
+    --ok: #5be3b3;
+    --border: #2d3454;
+    --code-bg: #10131f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 20px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #1e2746, #2a1f45);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+  }
+  header.hero h1 { margin: 0 0 8px; font-size: 2rem; }
+  header.hero p { margin: 4px 0; color: var(--muted); }
+  nav.toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 24px;
+    margin-bottom: 32px;
+  }
+  nav.toc h2 { margin-top: 0; font-size: 1.1rem; color: var(--accent); }
+  nav.toc ol { margin: 0; padding-left: 20px; }
+  nav.toc a { color: var(--text); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); text-decoration: underline; }
+  section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px 28px;
+    margin-bottom: 28px;
+  }
+  h2 { color: var(--accent); border-bottom: 2px solid var(--border); padding-bottom: 8px; margin-top: 0; }
+  h3 { color: var(--accent2); margin-top: 28px; }
+  h4 { margin-bottom: 6px; color: var(--text); }
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.9em;
+    color: #ffd9a0;
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: "SF Mono", Consolas, Monaco, monospace;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+  pre code { background: none; padding: 0; color: #d6e0ff; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+  th, td { border: 1px solid var(--border); padding: 9px 12px; text-align: left; }
+  th { background: var(--card2); color: var(--accent); }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--card2);
+    padding: 12px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.ok { border-left-color: var(--ok); }
+  .solution {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent2);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin: 14px 0 26px;
+  }
+  .solution summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--accent2);
+    outline: none;
+    user-select: none;
+  }
+  .solution summary:hover { color: var(--accent); }
+  .solution[open] summary { margin-bottom: 10px; }
+  .q { font-weight: 600; margin: 22px 0 4px; }
+  .q .num {
+    display: inline-block;
+    background: var(--accent);
+    color: #0f1221;
+    width: 26px; height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    margin-right: 8px;
+  }
+  .tag { display:inline-block; font-size:0.72rem; padding:2px 8px; border-radius:20px; background:var(--card2); color:var(--muted); border:1px solid var(--border); margin-left:6px; vertical-align:middle;}
+  .ok-text { color: var(--ok); font-weight: 600; }
+  .bad-text { color: var(--warn); font-weight: 600; }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li { padding: 6px 0 6px 30px; position: relative; }
+  .checklist li::before { content: "☐"; position: absolute; left: 0; color: var(--accent); font-size: 1.2rem; }
+  footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+  .big-o-order { font-size: 1.05rem; letter-spacing: 0.5px; }
+  .big-o-order .best { color: var(--ok); }
+  .big-o-order .worst { color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🧠 Algorithm Analysis — Complete Study Guide</h1>
+  <p>Zero-knowledge → exam-ready. Full explanations, worked examples, and <strong>solved</strong> practice questions.</p>
+  <p>Based on your kisi-kisi: Divide &amp; Conquer · Amortized Analysis · Randomized Algorithms · Greedy Algorithms</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#foundation">Foundation: Big-O Notation</a></li>
+    <li><a href="#dc">Topic 1 — Divide and Conquer (Time + Space)</a></li>
+    <li><a href="#amortized">Topic 2 — Amortized Analysis</a></li>
+    <li><a href="#randomized">Topic 3 — Randomized Algorithms</a></li>
+    <li><a href="#greedy">Topic 4 — Greedy Algorithms</a></li>
+    <li><a href="#plan">Study Plan + Exam Checklist</a></li>
+  </ol>
+  <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0;">💡 Click each <span style="color:var(--accent2)">▸ Show worked solution</span> to reveal the answer — try solving it yourself first!</p>
+</nav>
+
+<!-- ============ FOUNDATION ============ -->
+<section id="foundation">
+  <h2>0. Foundation: Big-O Notation</h2>
+  <p>Big-O describes <strong>how fast the number of operations (or memory) grows</strong> as input size <code>n</code> grows. We ignore constants and keep only the dominant term.</p>
+
+  <p class="big-o-order">Best → Worst:
+    <span class="best">O(1)</span> &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ) &lt; <span class="worst">O(n!)</span>
+  </p>
+
+  <table>
+    <tr><th>Notation</th><th>Name</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>O(1)</td><td>Constant</td><td>Same work regardless of size</td><td>Access <code>array[5]</code></td></tr>
+    <tr><td>O(log n)</td><td>Logarithmic</td><td>Halves the problem each step</td><td>Binary search</td></tr>
+    <tr><td>O(n)</td><td>Linear</td><td>One pass through the data</td><td>Find max in a list</td></tr>
+    <tr><td>O(n log n)</td><td>Linearithmic</td><td>Efficient sorting</td><td>Merge Sort, Quick Sort (avg)</td></tr>
+    <tr><td>O(n²)</td><td>Quadratic</td><td>Nested loops</td><td>Bubble Sort</td></tr>
+    <tr><td>O(2ⁿ)</td><td>Exponential</td><td>Doubles per added item</td><td>Naive Fibonacci</td></tr>
+    <tr><td>O(n!)</td><td>Factorial</td><td>Tries all orderings</td><td>Brute-force TSP</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>Simplification rules:</strong><br>
+    • Drop constants: <code>O(2n)</code> → <code>O(n)</code><br>
+    • Drop smaller terms: <code>O(n² + n)</code> → <code>O(n²)</code><br>
+    • Multiply nested loops: loop inside loop = <code>O(n) × O(n) = O(n²)</code>
+  </div>
+
+  <p><strong>Reading the graph:</strong> steeper curve = worse. <code>O(1)</code> is flat (best); <code>O(2ˣ)</code> and <code>O(n!)</code> shoot straight up (worst). To "estimate using the O-notation graph," match your operation count to the matching curve.</p>
+</section>
+
+<!-- ============ TOPIC 1 ============ -->
+<section id="dc">
+  <h2>Topic 1 — Divide and Conquer (Time + Space Complexity)</h2>
+
+  <h3>What it is</h3>
+  <p>A 3-step strategy: <strong>Divide</strong> the problem into smaller sub-problems → <strong>Conquer</strong> each recursively → <strong>Combine</strong> the answers. Examples: Merge Sort, Quick Sort, Binary Search.</p>
+
+  <h3>Computing TIME — Recurrence + Master Theorem</h3>
+  <p>When an algorithm calls itself, write a <strong>recurrence</strong>:</p>
+  <pre><code>T(n) = a · T(n/b) + f(n)</code></pre>
+  <ul>
+    <li><code>a</code> = number of sub-problems created</li>
+    <li><code>n/b</code> = size of each sub-problem</li>
+    <li><code>f(n)</code> = work to divide + combine (outside recursion)</li>
+  </ul>
+  <p>Let <code>c = log<sub>b</sub>(a)</code>. Compare <code>f(n)</code> with <code>n<sup>c</sup></code>:</p>
+  <table>
+    <tr><th>Case</th><th>Condition</th><th>Result</th></tr>
+    <tr><td>1</td><td><code>f(n)</code> grows slower than <code>n<sup>c</sup></code></td><td><code>O(n<sup>c</sup>)</code></td></tr>
+    <tr><td>2</td><td><code>f(n)</code> ≈ <code>n<sup>c</sup></code></td><td><code>O(n<sup>c</sup> · log n)</code></td></tr>
+    <tr><td>3</td><td><code>f(n)</code> grows faster than <code>n<sup>c</sup></code></td><td><code>O(f(n))</code></td></tr>
+  </table>
+
+  <h3>Worked Example A — Merge Sort</h3>
+  <pre><code>MergeSort(A):
+    if length(A) &lt;= 1: return A
+    mid = length(A) / 2
+    left  = MergeSort(A[0..mid])     # 1 sub-problem, size n/2
+    right = MergeSort(A[mid..end])   # 1 sub-problem, size n/2
+    return Merge(left, right)        # merge = O(n)</code></pre>
+  <p>Split into <strong>2</strong> halves → <code>a=2, b=2</code>; merge is <code>O(n)</code> → <code>f(n)=n</code>.<br>
+  <code>T(n) = 2T(n/2) + O(n)</code>, <code>c = log<sub>2</sub>2 = 1</code>, <code>n<sup>c</sup> = n</code>. <code>f(n)=n=n¹</code> → <strong>Case 2</strong> → <span class="ok-text">Time = O(n log n)</span>.</p>
+  <p><strong>Space:</strong> temp array of size n → <code>O(n)</code>, plus recursion stack <code>O(log n)</code>. Dominant → <span class="ok-text">Space = O(n)</span>.</p>
+
+  <h3>Worked Example B — Binary Search</h3>
+  <pre><code>BinarySearch(A, target, low, high):
+    if low &gt; high: return NOT_FOUND
+    mid = (low + high) / 2
+    if A[mid] == target: return mid
+    if A[mid] &lt; target: return BinarySearch(A, target, mid+1, high)
+    else:               return BinarySearch(A, target, low, mid-1)</code></pre>
+  <p><code>a=1</code> (one sub-problem), <code>b=2</code> (half), <code>f(n)=O(1)</code>.<br>
+  <code>T(n)=T(n/2)+O(1)</code>, <code>c=log<sub>2</sub>1=0</code>, <code>n<sup>0</sup>=1</code>. <code>f(n)=1</code> → Case 2 → <span class="ok-text">Time = O(log n)</span>.<br>
+  <strong>Space:</strong> recursive = <code>O(log n)</code> stack; iterative = <code>O(1)</code>.</p>
+
+  <h3>Thinking about SPACE complexity</h3>
+  <p>Space = extra memory beyond the input. Count: (1) extra data structures you allocate, (2) recursion stack depth (each call = one stack frame).</p>
+
+  <h3>🎯 Practice Questions — Topic 1</h3>
+
+  <p class="q"><span class="num">1</span>Write the recurrence for an algorithm that splits input into <strong>3</strong> sub-problems of size <strong>n/3</strong>, with <code>O(n)</code> combine work. Solve its time complexity. <span class="tag">Master Theorem</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p>3 sub-problems → <code>a=3</code>; size n/3 → <code>b=3</code>; combine <code>O(n)</code> → <code>f(n)=n</code>.</p>
+    <pre><code>T(n) = 3·T(n/3) + O(n)</code></pre>
+    <p><code>c = log<sub>3</sub>3 = 1</code>, so <code>n<sup>c</sup> = n¹ = n</code>. Compare <code>f(n)=n</code> vs <code>n</code> → equal → <strong>Case 2</strong>.</p>
+    <p><span class="ok-text">Answer: T(n) = O(n log n)</span>. (Same shape as Merge Sort — more pieces, but each smaller, so it balances out.)</p>
+  </details>
+
+  <p class="q"><span class="num">2</span>Give the <strong>time</strong> AND <strong>space</strong> complexity of this pseudocode, and explain the space part. <span class="tag">Recurrence + Space</span></p>
+  <pre><code>PowerOfTwo(n):
+    if n == 0: return 1
+    half = PowerOfTwo(n/2)
+    return half * half</code></pre>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Time:</strong> One recursive call on half the input → <code>a=1, b=2</code>; the multiply is <code>O(1)</code> → <code>f(n)=O(1)</code>.</p>
+    <pre><code>T(n) = T(n/2) + O(1)   →   c = log₂1 = 0, nᶜ = 1, f(n)=1 → Case 2</code></pre>
+    <p><span class="ok-text">Time = O(log n)</span> — n halves each call, so ~log₂n calls.</p>
+    <p><strong>Space:</strong> No extra arrays are allocated. The only extra memory is the <strong>recursion stack</strong>. The recursion goes <code>log n</code> deep (n → n/2 → n/4 → … → 0), and each level stores one stack frame (the <code>half</code> variable + return address).</p>
+    <p><span class="ok-text">Space = O(log n)</span>.</p>
+  </details>
+
+  <p class="q"><span class="num">3</span>Merge Sort uses <code>O(n)</code> extra space. Explain how an in-place sort like Quick Sort differs, and state Quick Sort's space complexity (average + worst). <span class="tag">Space comparison</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Merge Sort</strong> must allocate a temporary array of size n to merge the two halves → <code>O(n)</code> extra memory (it cannot merge in place efficiently).</p>
+    <p><strong>Quick Sort</strong> partitions the array <em>in place</em> by swapping elements around the pivot — it needs <strong>no extra array</strong>. Its only extra memory is the recursion stack.</p>
+    <ul>
+      <li><strong>Average case:</strong> balanced partitions → recursion depth <code>O(log n)</code> → <span class="ok-text">Space = O(log n)</span>.</li>
+      <li><strong>Worst case:</strong> unbalanced partitions (e.g., sorted input with a bad pivot) → recursion depth <code>O(n)</code> → <span class="bad-text">Space = O(n)</span>.</li>
+    </ul>
+    <p>So Quick Sort is more memory-efficient than Merge Sort on average, which is one reason it's often preferred in practice.</p>
+  </details>
+</section>
+
+<!-- ============ TOPIC 2 ============ -->
+<section id="amortized">
+  <h2>Topic 2 — Amortized Analysis (Operations per execution)</h2>
+
+  <h3>The idea</h3>
+  <p>When one operation is <strong>occasionally expensive</strong> but <strong>usually cheap</strong>, judging by the worst single operation is misleading. Amortized analysis finds the <strong>average cost per operation across a whole sequence</strong> (no probability — we spread the rare cost over the cheap ones).</p>
+  <div class="callout">💡 <strong>Analogy:</strong> A $600/year gym membership looks huge as one payment, but amortized over 365 days it's ~$1.64/day.</div>
+
+  <h3>Three methods</h3>
+  <ul>
+    <li><strong>Aggregate:</strong> total cost of n operations ÷ n. (Easiest — use this.)</li>
+    <li><strong>Accounting (banker's):</strong> overcharge cheap ops to bank "credit" for future expensive ones.</li>
+    <li><strong>Potential:</strong> define a potential function Φ that stores "energy" before expensive ops.</li>
+  </ul>
+
+  <h3>Worked Example — Dynamic Array that doubles</h3>
+  <p>Appending is usually <code>O(1)</code>, but when the array is full you copy all elements to a new array (<code>O(n)</code>). What's the amortized cost per <code>append</code>?</p>
+  <p>Inserting n items, the array doubles at sizes 1, 2, 4, 8, …, n. Copy costs sum to a geometric series:</p>
+  <pre><code>copies = 1 + 2 + 4 + ... + n ≈ 2n
+total = n (inserts) + 2n (copies) = 3n
+amortized = 3n / n = 3 = O(1)</code></pre>
+  <p class="ok-text">Even though one append can cost O(n), the amortized cost is O(1) per operation.</p>
+
+  <h3>🎯 Practice Questions — Topic 2</h3>
+
+  <p class="q"><span class="num">1</span>A stack supports <code>push</code> (cost 1) and <code>multipop(k)</code> (cost = items actually popped). Using the aggregate method, show a sequence of n operations costs <code>O(n)</code> total. <span class="tag">Aggregate</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Key insight:</strong> an element can only be popped <em>once</em>, and it must have been pushed before it can be popped. So the total number of pops can never exceed the total number of pushes.</p>
+    <ul>
+      <li>Total pushes over n operations ≤ n (each push is one operation).</li>
+      <li>Therefore total pops (across all <code>multipop</code> calls) ≤ n as well.</li>
+      <li>Total work = pushes + pops ≤ <code>n + n = 2n</code>.</li>
+    </ul>
+    <p>Amortized per operation = <code>2n / n = 2 =</code> <span class="ok-text">O(1)</span>. Even though a single <code>multipop</code> can cost up to O(n), it can only be that expensive if many cheap pushes happened earlier to "fund" it.</p>
+  </details>
+
+  <p class="q"><span class="num">2</span>A binary counter is incremented n times. Show the amortized cost per increment is <code>O(1)</code>. <span class="tag">Aggregate</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p>An increment flips bits because of carries. The trick is to count <strong>how often each bit position flips</strong> over n increments:</p>
+    <ul>
+      <li>Bit 0 (ones place) flips <strong>every</strong> increment → n times</li>
+      <li>Bit 1 flips every 2nd increment → n/2 times</li>
+      <li>Bit 2 flips every 4th increment → n/4 times</li>
+      <li>Bit <code>i</code> flips → n/2<sup>i</sup> times</li>
+    </ul>
+    <p>Total flips = <code>n + n/2 + n/4 + n/8 + … &lt; 2n</code> (geometric series).</p>
+    <p>Amortized per increment = <code>2n / n = 2 =</code> <span class="ok-text">O(1)</span>. Although one increment like 0111→1000 flips 4 bits, those costly carries are rare.</p>
+  </details>
+
+  <p class="q"><span class="num">3</span>Explain the difference between <strong>worst-case cost of a single operation</strong> and <strong>amortized cost</strong>, using the dynamic array. <span class="tag">Concept</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Worst-case single operation:</strong> The single most expensive append is the one that triggers a resize when the array is full — it copies all n existing elements, costing <code>O(n)</code>. If you only looked at this, you'd wrongly conclude append is "slow."</p>
+    <p><strong>Amortized cost:</strong> Looks at the whole sequence. That expensive O(n) resize happens rarely (only when the array doubles), and it's "paid for" by the many cheap O(1) appends before it. Averaged across all operations, each append costs <code>O(1)</code>.</p>
+    <p><span class="ok-text">In short:</span> worst-case = the single most expensive moment; amortized = the realistic average per operation over a long run. For a dynamic array: worst-case single append = <code>O(n)</code>, amortized append = <code>O(1)</code>.</p>
+  </details>
+</section>
+
+<!-- ============ TOPIC 3 ============ -->
+<section id="randomized">
+  <h2>Topic 3 — Randomized Algorithms (Expected Running Time)</h2>
+
+  <h3>The idea</h3>
+  <p>An algorithm that makes <strong>random choices</strong> during execution, so no specific input can force the worst case. Running time becomes an <strong>expectation</strong> (average over the random choices).</p>
+  <div class="callout"><strong>Expected value formula:</strong> <code>E[X] = Σ (value × probability)</code>. Example: a fair die, <code>E = (1+2+3+4+5+6)/6 = 3.5</code>.</div>
+
+  <h3>Worked Example — Randomized Quick Sort</h3>
+  <pre><code>QuickSort(A):
+    if length(A) &lt;= 1: return A
+    pivot = A[ RANDOM index ]        # &lt;-- randomization
+    left  = elements &lt; pivot
+    right = elements &gt; pivot
+    return QuickSort(left) + [pivot] + QuickSort(right)</code></pre>
+  <p>With a <strong>fixed</strong> pivot (always first element), a <em>sorted</em> input gives the worst case <code>O(n²)</code> — every partition is lopsided (n-1 and 0). A <strong>random</strong> pivot means no input can reliably force this.</p>
+  <p>A random pivot gives a reasonably balanced split with high probability → <code>O(n)</code> work per level × <code>O(log n)</code> levels = <span class="ok-text">Expected time O(n log n)</span>. Worst case O(n²) still exists but is astronomically unlikely.</p>
+  <p><strong>On the O-graph:</strong> point to the <code>O(n log n)</code> curve for expected; note <code>O(n²)</code> above it as the unlikely worst case.</p>
+
+  <h3>"Modify and prove" — what the exam wants</h3>
+  <ol>
+    <li><strong>Modify:</strong> inject a random choice into a deterministic algorithm (e.g., random pivot).</li>
+    <li><strong>Prove:</strong> write <code>E[T(n)]</code> and show it equals <code>O(n log n)</code>.</li>
+    <li><strong>Estimate:</strong> match it to the correct curve on the graph.</li>
+  </ol>
+
+  <h3>🎯 Practice Questions — Topic 3</h3>
+
+  <p class="q"><span class="num">1</span>Explain why deterministic Quick Sort (pivot = first element) is <code>O(n²)</code> on a sorted array, and how a random pivot fixes it. <span class="tag">Reasoning</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Sorted input, pivot = first element</strong> (say array <code>[1,2,3,4,5]</code>, pivot = 1):</p>
+    <ul>
+      <li>Everything is bigger than 1, so <code>left = []</code> (empty), <code>right = [2,3,4,5]</code>. The split is n-1 and 0 — totally unbalanced.</li>
+      <li>Next level: pivot = 2, left = [], right = [3,4,5]. Same lopsided split again.</li>
+      <li>This recurses n times, and each level does O(n) partition work → <code>n × n = </code><span class="bad-text">O(n²)</span>.</li>
+      <li>Recurrence: <code>T(n) = T(n-1) + O(n) = O(n²)</code>.</li>
+    </ul>
+    <p><strong>Random pivot fix:</strong> Now the pivot is a random element, so on average it lands near the middle. Expected split ≈ half and half (even a 1/4 : 3/4 split keeps depth logarithmic). The adversary can't design an input to force lopsided splits because the pivot choice is random, not positional. → <span class="ok-text">Expected O(n log n)</span>.</p>
+  </details>
+
+  <p class="q"><span class="num">2</span>Write the recurrence for the <strong>expected</strong> running time of randomized Quick Sort and argue why it solves to <code>O(n log n)</code>. <span class="tag">Proof</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p>With a random pivot, the expected split is balanced, so on average each of the two sub-problems has about half the elements:</p>
+    <pre><code>E[T(n)] = 2 · E[T(n/2)] + O(n)</code></pre>
+    <p>This is exactly the Merge Sort recurrence. Applying the Master Theorem: <code>a=2, b=2, f(n)=O(n)</code>, <code>c = log₂2 = 1</code>, <code>f(n)=n=n¹</code> → Case 2 → <span class="ok-text">O(n log n)</span>.</p>
+    <p><strong>Intuition why it holds even when splits aren't exactly half:</strong> a random pivot gives a split at least as balanced as 1/4 : 3/4 with probability ≥ 1/2. A 1/4:3/4 split still shrinks the problem by a constant factor each level, so the recursion depth stays <code>O(log n)</code>, and with O(n) work per level the total expected work is <code>O(n log n)</code>.</p>
+  </details>
+
+  <p class="q"><span class="num">3</span>Flip a fair coin until you get HEADS. Compute the expected number of flips, then connect this idea to randomized-algorithm analysis. <span class="tag">Expected value</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p>This is a <strong>geometric distribution</strong>: success probability per flip is <code>p = 1/2</code>. The expected number of trials until the first success is <code>1/p</code>.</p>
+    <pre><code>E[flips] = 1 / p = 1 / (1/2) = 2 flips</code></pre>
+    <p><strong>Verification by the formula</strong> <code>E[X] = Σ (value × probability)</code>:</p>
+    <pre><code>E = 1·(1/2) + 2·(1/4) + 3·(1/8) + 4·(1/16) + ... = 2</code></pre>
+    <p>(The weighted sum of <code>k · (1/2)ᵏ</code> converges to 2.)</p>
+    <p><strong>Connection:</strong> Many randomized algorithms repeat a random trial until they "succeed" (e.g., keep picking a random pivot until you get a good-enough split, or retry a random hash). The expected number of trials is <code>1/p</code> where <code>p</code> is the success probability per trial. If <code>p</code> is a constant (like ≥ 1/2), the expected number of retries is a small constant — which is why randomized algorithms are fast <em>in expectation</em>.</p>
+  </details>
+</section>
+
+<!-- ============ TOPIC 4 ============ -->
+<section id="greedy">
+  <h2>Topic 4 — Greedy Algorithms (Prove correctness from pseudocode)</h2>
+
+  <h3>The idea</h3>
+  <p>At each step, make the choice that looks best <strong>right now</strong> (locally optimal) and never reconsider. Hope these local choices build a globally optimal solution. Examples: Activity Selection, Huffman Coding, Dijkstra, Kruskal/Prim.</p>
+
+  <h3>Greedy is correct only if BOTH properties hold</h3>
+  <ol>
+    <li><strong>Greedy Choice Property</strong> — a global optimum can be reached by making the local best choice at each step (the greedy choice is "safe").</li>
+    <li><strong>Optimal Substructure</strong> — after the greedy choice, the remaining problem is a smaller version of the same problem, and whole optimum = greedy choice + optimum of the rest.</li>
+  </ol>
+
+  <h3>Proof technique — the Exchange Argument</h3>
+  <ol>
+    <li>Assume an optimal solution <code>OPT</code> differs from the greedy solution <code>G</code>.</li>
+    <li>Find the first place they differ.</li>
+    <li><strong>Exchange</strong> OPT's choice there for the greedy choice — show it doesn't make OPT worse.</li>
+    <li>Repeat until OPT becomes G. Therefore G is also optimal. ∎</li>
+  </ol>
+
+  <h3>Worked Example — Activity Selection</h3>
+  <p>Select the maximum number of non-overlapping activities. Greedy rule: always pick the activity that <strong>finishes earliest</strong> among compatible ones.</p>
+  <pre><code>ActivitySelection(activities):
+    sort activities by finish time (ascending)
+    selected = [ first activity ]
+    last_finish = activities[0].finish
+    for each activity a in order:
+        if a.start &gt;= last_finish:     # compatible = greedy choice
+            selected.add(a)
+            last_finish = a.finish
+    return selected</code></pre>
+
+  <div class="callout warn">
+    <strong>Worked Example — when greedy FAILS:</strong> Coins {1, 3, 4}, make amount 6.<br>
+    • Greedy: take 4 → remaining 2 → take 1,1 → <span class="bad-text">3 coins (4+1+1)</span><br>
+    • Optimal: 3 + 3 → <span class="ok-text">2 coins</span><br>
+    One counterexample disproves greedy!
+  </div>
+
+  <h3>🎯 Practice Questions — Topic 4</h3>
+
+  <p class="q"><span class="num">1</span>For US coins {1,5,10,25} with "always take the largest coin ≤ remaining," argue whether greedy is optimal. Then show it FAILS for {1,3,4}. <span class="tag">Prove / Disprove</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>US coins {1,5,10,25} — greedy IS optimal.</strong> This coin system is "canonical": each larger coin is worth enough that using it never forces you into using more small coins than an optimal solution would. For example, making 30: greedy = 25+5 = 2 coins, which is optimal. There is no amount where greedy uses more coins than necessary, because the denominations are structured so the greedy choice is always safe. (A full proof shows that for any amount, using fewer of a larger coin would require making up the difference with strictly more smaller coins.)</p>
+    <p><strong>{1,3,4} — greedy FAILS.</strong> Counterexample: amount = 6.</p>
+    <ul>
+      <li>Greedy: largest ≤ 6 is 4 → remaining 2 → 1+1 → total <span class="bad-text">3 coins (4+1+1)</span>.</li>
+      <li>Optimal: 3+3 → <span class="ok-text">2 coins</span>.</li>
+    </ul>
+    <p>Since one counterexample exists, greedy is <strong>not</strong> optimal for {1,3,4}. Lesson: greedy's correctness depends entirely on the specific denominations.</p>
+  </details>
+
+  <p class="q"><span class="num">2</span>A "greedy" activity selection picks the <strong>shortest-duration</strong> activity first (instead of earliest finish). Prove it's incorrect with a counterexample. <span class="tag">Disprove</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p>Consider 3 activities (as [start, finish] intervals):</p>
+    <ul>
+      <li>A = [1, 5] &nbsp; (duration 4)</li>
+      <li>B = [4, 6] &nbsp; (duration 2, the shortest)</li>
+      <li>C = [6, 10] &nbsp; (duration 4)</li>
+    </ul>
+    <p><strong>Shortest-duration greedy</strong> picks B first (duration 2). But B = [4,6] overlaps both A (ends at 5 > 4) and C (starts at 6, B ends at 6 — if we require strict non-overlap, B blocks A; even sharing endpoints, B conflicts with A). After picking B, neither A nor C can both fit cleanly around it → it selects just <span class="bad-text">1 activity (B)</span>.</p>
+    <p><strong>Optimal</strong> picks A = [1,5] then C = [6,10], which don't overlap → <span class="ok-text">2 activities</span>.</p>
+    <p>The single short activity B sits in the middle and blocks two longer, mutually-compatible activities. Therefore "shortest duration first" is <strong>not</strong> optimal — only "earliest finish time" is provably correct.</p>
+  </details>
+
+  <p class="q"><span class="num">3</span>Explain the exchange argument, then use it to prove the "earliest finish time" greedy choice for Activity Selection is safe. <span class="tag">Proof</span></p>
+  <details class="solution">
+    <summary>▸ Show worked solution</summary>
+    <p><strong>Exchange argument in plain words:</strong> To prove a greedy choice is safe, take any optimal solution, find where it disagrees with greedy, and swap in the greedy choice. If the solution stays just as good after the swap, then greedy's choice was never a mistake — so greedy can reach an optimal solution too.</p>
+    <p><strong>Proof for Activity Selection:</strong></p>
+    <ol>
+      <li>Let <code>g</code> be the activity that finishes earliest (greedy's first pick). Let <code>OPT</code> be any optimal solution, and let <code>o</code> be the first activity in OPT (the one that finishes earliest within OPT).</li>
+      <li>Because <code>g</code> finishes earliest of ALL activities, its finish time ≤ <code>o</code>'s finish time.</li>
+      <li>Now replace <code>o</code> with <code>g</code> in OPT. Every other activity in OPT started after <code>o</code> finished, and since <code>g</code> finishes no later than <code>o</code>, all those activities are still compatible with <code>g</code>. So the swapped solution is still valid.</li>
+      <li>The swap didn't remove any activity — the count is unchanged — so the new solution is <strong>still optimal</strong> and it now contains the greedy choice <code>g</code>.</li>
+      <li>Repeat this argument on the remaining sub-problem. Each step shows greedy's choice is safe, so greedy builds an optimal solution. ∎</li>
+    </ol>
+    <p><span class="ok-text">Conclusion:</span> picking the earliest-finishing activity is always safe because it frees up the most remaining time for future activities.</p>
+  </details>
+</section>
+
+<!-- ============ STUDY PLAN ============ -->
+<section id="plan">
+  <h2>📅 Suggested Study Plan + Exam Checklist</h2>
+  <table>
+    <tr><th>Day</th><th>Focus</th><th>Goal</th></tr>
+    <tr><td>1</td><td>Big-O + reading the graph</td><td>Rank O(1)…O(n!) and simplify expressions</td></tr>
+    <tr><td>2</td><td>D&amp;C, Master Theorem, time+space</td><td>Solve Merge Sort &amp; Binary Search recurrences by hand</td></tr>
+    <tr><td>3</td><td>Topic 1 practice questions</td><td>Do all 3 without notes</td></tr>
+    <tr><td>4</td><td>Amortized (aggregate + accounting)</td><td>Explain dynamic array O(1) amortized</td></tr>
+    <tr><td>5</td><td>Amortized practice + Randomized intro</td><td>Expected value + Quick Sort reasoning</td></tr>
+    <tr><td>6</td><td>Randomized practice (expected time proofs)</td><td>Write the E[T(n)] recurrence from memory</td></tr>
+    <tr><td>7</td><td>Greedy + exchange argument</td><td>Prove Activity Selection; know a failure counterexample</td></tr>
+    <tr><td>8</td><td>Mix: redo all practice + the graph</td><td>Simulate exam conditions</td></tr>
+  </table>
+
+  <h3>Exam-day checklist (maps to your 4 kisi-kisi points)</h3>
+  <ul class="checklist">
+    <li><strong>#1 D&amp;C:</strong> Can I write a recurrence AND compute space (memory) complexity?</li>
+    <li><strong>#2 Amortized:</strong> Can I compute cost per operation using the aggregate method?</li>
+    <li><strong>#3 Randomized:</strong> Can I modify an algorithm to be randomized, prove expected O(n log n), and point to the right O-graph curve?</li>
+    <li><strong>#4 Greedy:</strong> Given pseudocode, can I prove correctness with an exchange argument OR disprove it with a counterexample?</li>
+  </ul>
+</section>
+
+<footer>
+  Study guide generated for your algorithm analysis exam · Click any solution to reveal · Good luck! 🍀
+</footer>
+
+</div>
+</body>
+</html>
