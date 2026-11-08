@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Questions — Complexity &amp; Amortized Analysis</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>📝 Practice Questions</h1>
+  <p>Time Complexity · Space Complexity · Amortized Cost. Answers are hidden — try each yourself, then click <strong>🔒 Reveal answer</strong> to check.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Sections</h2>
+  <ol>
+    <li><a href="#time">Time Complexity (Master Theorem &amp; Recursion Tree) — 6 questions</a></li>
+    <li><a href="#space">Space Complexity — 4 questions</a></li>
+    <li><a href="#amortized">Amortized Cost (Aggregate &amp; Accounting) — 5 questions</a></li>
+  </ol>
+  <p style="color:var(--muted);font-size:0.85rem;margin-bottom:0;">💡 Work it out on paper first — the point is the <em>method</em>, not just the final Big-O.</p>
+</nav>
+
+<!-- ================= TIME ================= -->
+<section id="time">
+  <h2>1. Time Complexity</h2>
+
+  <p class="q"><span class="num">1</span>Solve <code>T(n) = 2T(n/2) + n²</code> using the Master Theorem. <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=2, b=2, f(n)=n²</code>. Critical exponent <code>c = log₂2 = 1</code> → <code>nᶜ = n</code>.</p>
+    <p>Compare: <code>f(n)=n²</code> grows <em>faster</em> than <code>n</code> → <strong>Case 3</strong> (root dominates).</p>
+    <p class="ok-text">T(n) = Θ(n²).</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>Solve <code>T(n) = 9T(n/3) + n</code> using the Master Theorem. <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=9, b=3, f(n)=n</code>. <code>c = log₃9 = 2</code> → <code>nᶜ = n²</code>.</p>
+    <p>Compare: <code>f(n)=n</code> &lt; <code>n²</code> → <strong>Case 1</strong> (leaves dominate).</p>
+    <p class="ok-text">T(n) = Θ(n²).</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span>Solve <code>T(n) = 3T(n/4) + n</code> using the Master Theorem. <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=3, b=4, f(n)=n</code>. <code>c = log₄3 ≈ 0.79</code> → <code>nᶜ ≈ n^0.79</code>.</p>
+    <p>Compare: <code>f(n)=n = n¹</code> grows faster than <code>n^0.79</code> → <strong>Case 3</strong> (root dominates).</p>
+    <p class="ok-text">T(n) = Θ(n).</p>
+    <p class="callout">Clue: when in doubt, remember <code>n¹</code> vs <code>n^0.79</code> — the bigger exponent wins.</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>Solve <code>T(n) = 2T(n/2) + n log n</code>. (Careful — this is a Master Theorem edge case.) <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=2, b=2</code> → <code>c=1</code>, <code>nᶜ = n</code>. Here <code>f(n)=n log n</code>, which is <em>slightly</em> larger than <code>n</code> but NOT by a polynomial factor (only by a log). The three simple cases don't cleanly apply.</p>
+    <p>Use the recursion tree instead: each level sums to <code>n log n</code>-ish... more precisely, level i contributes <code>n·log(n/2ⁱ)</code>, and summing over <code>log n</code> levels gives:</p>
+    <p class="ok-text">T(n) = Θ(n log² n).</p>
+    <p class="callout">Lesson: when <code>f(n)</code> beats <code>nᶜ</code> only by a logarithmic factor, the Master Theorem (basic form) doesn't apply — drop to a recursion tree.</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span>Use a <strong>recursion tree</strong> to solve <code>T(n) = 3T(n/2) + n</code>. <span class="tag">Recursion Tree</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Work per level:</b> root = <code>n</code>; level 1 = <code>3·(n/2) = (3/2)n</code>; level 2 = <code>9·(n/4) = (9/4)n</code>; level i = <code>(3/2)ⁱ · n</code>. The work <em>grows</em> each level.</p>
+    <p><b>Number of levels:</b> <code>log₂n</code>.</p>
+    <p><b>Total:</b> geometric series <code>n · Σ(3/2)ⁱ</code> dominated by its last term at level <code>log₂n</code>: <code>(3/2)^(log₂n) · n = n^(log₂3)</code>.</p>
+    <p class="ok-text">T(n) = Θ(n^(log₂3)) ≈ Θ(n^1.585).</p>
+    <p class="callout">Check with Master Theorem: <code>c=log₂3≈1.585</code>, <code>f(n)=n &lt; n^1.585</code> → Case 1 → <code>Θ(n^1.585)</code>. ✓ (This is the Karatsuba multiplication recurrence!)</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Analyse the time complexity of this code. <span class="tag">Loops</span></p>
+  <pre><code>for i in range(n):          # outer
+    j = 1
+    while j &lt; n:
+        j = j * 2            # j doubles</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Outer loop runs <code>n</code> times. Inner <code>while</code>: <code>j</code> doubles (1→2→4→…→n), so it runs <code>log₂n</code> times.</p>
+    <p>Total = <code>n × log n</code>.</p>
+    <p class="ok-text">Time = Θ(n log n).</p>
+  </div></details>
+</section>
+
+<!-- ================= SPACE ================= -->
+<section id="space">
+  <h2>2. Space Complexity</h2>
+
+  <p class="q"><span class="num">7</span>What is the space complexity of this function, and why? <span class="tag">Recursion stack</span></p>
+  <pre><code>def factorial(n):
+    if n &lt;= 1: return 1
+    return n * factorial(n - 1)</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>No auxiliary data structures. The recursion chain <code>factorial(n)→factorial(n-1)→…→factorial(1)</code> is <code>n</code> calls deep, and all are on the stack before any returns.</p>
+    <p class="ok-text">Space = O(n)</p> (from the call stack). Time is also O(n).
+  </div></details>
+
+  <p class="q"><span class="num">8</span>Compare the space of these two "contains duplicate" approaches. <span class="tag">Aux structures</span></p>
+  <pre><code># A: sort then scan neighbours
+def has_dup_A(arr):
+    arr.sort()
+    for i in range(1, len(arr)):
+        if arr[i] == arr[i-1]: return True
+    return False
+
+# B: hash set
+def has_dup_B(arr):
+    seen = set()
+    for x in arr:
+        if x in seen: return True
+        seen.add(x)
+    return False</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>A:</b> sorts in place (ignoring sort's internal stack) and uses O(1) extra for the scan → <span class="ok-text">O(1) auxiliary</span> (but O(n log n) time).</p>
+    <p><b>B:</b> the <code>seen</code> set can hold up to n elements → <span class="bad-text">O(n) auxiliary</span> (but O(n) time).</p>
+    <p class="callout">Classic time-space trade-off: B is faster (O(n) vs O(n log n)) but uses more memory.</p>
+  </div></details>
+
+  <p class="q"><span class="num">9</span>What's the space complexity of building and returning a list of the first n squares? <span class="tag">Output</span></p>
+  <pre><code>def squares(n):
+    result = []
+    for i in range(n):
+        result.append(i*i)
+    return result</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>The <code>result</code> list grows to hold n numbers.</p>
+    <p class="ok-text">Space = O(n).</p>
+    <p class="callout">Subtlety: if the question asks for <em>auxiliary</em> space and the output doesn't count, some courses still call this O(n) because the list is explicitly allocated. State your assumption.</p>
+  </div></details>
+
+  <p class="q"><span class="num">10</span>This recursive Fibonacci has exponential <em>time</em>. What is its <em>space</em> complexity? <span class="tag">Tricky</span></p>
+  <pre><code>def fib(n):
+    if n &lt; 2: return n
+    return fib(n-1) + fib(n-2)</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Time is <code>O(2ⁿ)</code> (huge). But space is only the <strong>maximum stack depth</strong> at any instant — not the total number of calls.</p>
+    <p>The deepest chain is <code>fib(n)→fib(n-1)→fib(n-2)→…→fib(1)</code>, which is <code>n</code> deep. The two recursive calls happen one after the other, so only one branch is on the stack at a time.</p>
+    <p class="ok-text">Space = O(n).</p>
+    <p class="callout">Key insight: exponential time, but only linear space. Time ≠ space.</p>
+  </div></details>
+</section>
+
+<!-- ================= AMORTIZED ================= -->
+<section id="amortized">
+  <h2>3. Amortized Cost</h2>
+
+  <p class="q"><span class="num">11</span>A dynamic array <strong>triples</strong> (×3) in size when full, instead of doubling. Use the <strong>aggregate method</strong> to find the amortized cost of append. <span class="tag">Aggregate</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Resizes happen at sizes 1, 3, 9, …, n. Copy work = <code>1 + 3 + 9 + … + n</code>, a geometric series with ratio 3, which sums to <code>(3n−1)/2 ≈ 1.5n</code>.</p>
+    <p>Total = <code>n (writes) + 1.5n (copies) = 2.5n</code>. Divide by n → <code>2.5</code>.</p>
+    <p class="ok-text">Amortized O(1) per append.</p>
+    <p class="callout">Any growth factor &gt; 1 (×2, ×3, ×1.5…) gives amortized O(1); the constant just changes.</p>
+  </div></details>
+
+  <p class="q"><span class="num">12</span>Use the <strong>accounting method</strong> to prove append on a doubling array is O(1) amortized. State the charge and the invariant. <span class="tag">Accounting</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Charge:</b> 3 coins per append.</p>
+    <p><b>Allocation:</b> 1 coin inserts the new element; 1 coin is stored on the new element (to pay to move <em>itself</em> at the next resize); 1 coin pays to move one already-existing element that has spent its own coin.</p>
+    <p><b>Invariant:</b> right before a resize of a full array of size n, exactly the n/2 newest elements carry stored credit — enough to move all n elements. Balance never goes negative.</p>
+    <p class="ok-text">Constant charge of 3 → amortized O(1).</p>
+  </div></details>
+
+  <p class="q"><span class="num">13</span>A queue is implemented with two stacks (<code>in</code> and <code>out</code>). <code>enqueue</code> pushes to <code>in</code>. <code>dequeue</code> pops from <code>out</code>; if <code>out</code> is empty, it first moves every element from <code>in</code> to <code>out</code> (one pop + one push each). Show <code>dequeue</code> is amortized O(1). <span class="tag">Aggregate</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Key observation:</b> each element is moved from <code>in</code> to <code>out</code> <em>at most once</em> in its lifetime. So across n operations, the total "transfer" work is bounded by the number of elements ever enqueued ≤ n.</p>
+    <p>Each element is touched a constant number of times total: 1 push to <code>in</code>, 1 pop from <code>in</code>, 1 push to <code>out</code>, 1 pop from <code>out</code> = 4 operations over its whole life.</p>
+    <p>Total work over n ops = O(n). Divide by n →</p>
+    <p class="ok-text">Amortized O(1) per operation</p> — even though a single dequeue that triggers a transfer can cost O(n).
+  </div></details>
+
+  <p class="q"><span class="num">14</span>Use the <strong>accounting method</strong> for the two-stack queue above: assign charges so the transfer is prepaid. <span class="tag">Accounting</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Charge:</b> <code>enqueue</code> = 3, <code>dequeue</code> = 1.</p>
+    <p><b>Allocation for enqueue (3 coins):</b> 1 pays the push onto <code>in</code> now; 2 are stored on the element to prepay its future <em>pop from <code>in</code></em> and <em>push onto <code>out</code></em> during a transfer.</p>
+    <p><b>dequeue (1 coin):</b> pays the single pop from <code>out</code>.</p>
+    <p><b>Invariant:</b> every element sitting in <code>in</code> carries 2 prepaid coins, exactly covering its eventual transfer. Balance never negative.</p>
+    <p class="ok-text">All charges constant → amortized O(1).</p>
+  </div></details>
+
+  <p class="q"><span class="num">15</span>A k-bit binary counter also supports <code>reset</code> (set all bits to 0, cost = number of 1-bits cleared). Does the amortized O(1)-per-operation bound still hold if we mix increments and resets? Explain. <span class="tag">Accounting / tricky</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Yes, with the accounting method.</b> Charge 2 per increment as before: 1 to set a bit to 1 now, 1 stored <em>on that 1-bit</em> to prepay clearing it later.</p>
+    <p><b>Why reset is free (amortized):</b> every 1-bit in the counter was set by some earlier increment that already stored a coin on it. When <code>reset</code> clears those bits, the stored coins pay for all the clearing — reset is charged 0 and still never overdraws the balance.</p>
+    <p class="ok-text">Amortized O(1) per operation holds, even mixing increments and resets.</p>
+    <p class="callout">This is the classic example where the <em>aggregate</em> method struggles (a reset's cost depends on history), but the <em>accounting</em> method handles it cleanly — the prepaid credit idea does the work.</p>
+  </div></details>
+</section>
+
+<footer>Practice set · Reveal answers to self-check · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
