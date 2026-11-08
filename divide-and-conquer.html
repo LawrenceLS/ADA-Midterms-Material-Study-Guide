@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divide and Conquer — Worked Examples &amp; Practice</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .tree{font-family:"SF Mono",Consolas,Monaco,monospace;white-space:pre;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-size:0.85rem;color:#d6e0ff;}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>⚔️ Divide and Conquer</h1>
+  <p>Worked examples first (fully explained), then practice questions with hidden answers.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#concept">The core idea &amp; the 3 steps</a></li>
+    <li><a href="#worked">Worked Examples (step by step)</a></li>
+    <li><a href="#practice">Practice Questions (answers hidden)</a></li>
+  </ol>
+</nav>
+
+<!-- ============ CONCEPT ============ -->
+<section id="concept">
+  <h2>1. The Core Idea</h2>
+  <p>Divide and Conquer (D&amp;C) solves a problem by breaking it into smaller versions of <em>itself</em>, solving those, then stitching the answers together. Three steps:</p>
+  <ol>
+    <li><strong>Divide</strong> — split the input into smaller sub-problems (usually equal halves).</li>
+    <li><strong>Conquer</strong> — solve each sub-problem recursively (the base case stops the recursion).</li>
+    <li><strong>Combine</strong> — merge the sub-answers into the final answer.</li>
+  </ol>
+  <p>To analyse the running time, express it as a <strong>recurrence</strong> and solve with the <strong>Master Theorem</strong> or a <strong>recursion tree</strong>:</p>
+  <pre><code>T(n) = a · T(n/b) + f(n)
+  a    = number of sub-problems
+  n/b  = size of each sub-problem
+  f(n) = divide + combine work (outside the recursion)
+
+Critical exponent:  c = log_b(a)
+  Case 1: f(n) &lt; n^c   →  T(n) = Θ(n^c)          (leaves dominate)
+  Case 2: f(n) = n^c   →  T(n) = Θ(n^c · log n)   (every level equal)
+  Case 3: f(n) &gt; n^c   →  T(n) = Θ(f(n))          (top work dominates)</code></pre>
+  <div class="callout">Classic D&amp;C algorithms: <strong>Merge Sort, Quick Sort, Binary Search, Karatsuba multiplication, Strassen matrix multiply, Closest Pair of Points, Maximum Subarray.</strong></div>
+</section>
+
+<!-- ============ WORKED ============ -->
+<section id="worked">
+  <h2>2. Worked Examples</h2>
+
+  <h3>Example 1 — Merge Sort (the canonical D&amp;C sort)</h3>
+  <pre><code>MergeSort(A):
+    if length(A) &lt;= 1: return A            # base case
+    mid   = length(A) / 2
+    left  = MergeSort(A[0 .. mid])         # divide + conquer (n/2)
+    right = MergeSort(A[mid .. end])       # divide + conquer (n/2)
+    return Merge(left, right)              # combine = O(n)</code></pre>
+  <div class="step"><b>Step 1 — Map to the template.</b> 2 sub-problems (<code>a=2</code>), each half-size (<code>b=2</code>), merging is one linear pass (<code>f(n)=n</code>). → <code>T(n) = 2T(n/2) + n</code>.</div>
+  <div class="step"><b>Step 2 — Critical exponent.</b> <code>c = log₂2 = 1</code>, so <code>n^c = n</code>.</div>
+  <div class="step"><b>Step 3 — Compare.</b> <code>f(n)=n = n^c</code> → tie → <strong>Case 2</strong>.</div>
+  <div class="step"><b>Step 4 — Answer.</b> <span class="ok-text">Time = Θ(n log n)</span>. <strong>Space = O(n)</strong> (temp merge array) + O(log n) stack → O(n).</div>
+
+  <h3>Example 2 — Why it's n log n, seen as a recursion tree</h3>
+  <div class="tree">Level 0:            n                → n
+                   /   \
+Level 1:        n/2     n/2           → n/2 + n/2 = n
+                / \     / \
+Level 2:    n/4 n/4  n/4 n/4          → 4·(n/4) = n
+                 ...
+Leaves:   n nodes of size 1          → n
+
+work per level = n   ·   number of levels = log₂n   =   n log n</div>
+  <p>Each level sums to exactly <code>n</code> (twice as many nodes, each doing half the work — cancels). There are <code>log₂n</code> levels. Product = <span class="ok-text">Θ(n log n)</span>.</p>
+
+  <h3>Example 3 — Binary Search</h3>
+  <pre><code>BinarySearch(A, target, lo, hi):
+    if lo &gt; hi: return NOT_FOUND
+    mid = (lo + hi) / 2
+    if A[mid] == target: return mid
+    if A[mid] &lt; target:  return BinarySearch(A, target, mid+1, hi)
+    else:                return BinarySearch(A, target, lo, mid-1)</code></pre>
+  <div class="step"><b>Step 1.</b> Only ONE half is searched (<code>a=1</code>), it's half-size (<code>b=2</code>), work is a single comparison (<code>f(n)=1</code>). → <code>T(n) = T(n/2) + 1</code>.</div>
+  <div class="step"><b>Step 2.</b> <code>c = log₂1 = 0</code> → <code>n^c = n⁰ = 1</code>.</div>
+  <div class="step"><b>Step 3.</b> <code>f(n)=1 = n^c</code> → Case 2.</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">Time = Θ(log n)</span>. Space = O(log n) recursive / O(1) iterative.</div>
+
+  <h3>Example 4 — Maximum Subarray (D&amp;C version)</h3>
+  <p>Find the contiguous subarray with the largest sum. D&amp;C idea: the best subarray lies entirely in the left half, entirely in the right half, OR <em>crosses</em> the midpoint.</p>
+  <pre><code>MaxSubarray(A, lo, hi):
+    if lo == hi: return A[lo]                    # base case
+    mid = (lo + hi) / 2
+    L = MaxSubarray(A, lo, mid)                  # best in left   (n/2)
+    R = MaxSubarray(A, mid+1, hi)                # best in right  (n/2)
+    C = MaxCrossingSum(A, lo, mid, hi)           # best crossing  O(n)
+    return max(L, R, C)</code></pre>
+  <div class="step"><b>Step 1.</b> 2 sub-problems (<code>a=2</code>), half-size (<code>b=2</code>); the crossing scan is linear (<code>f(n)=n</code>). → <code>T(n) = 2T(n/2) + n</code>.</div>
+  <div class="step"><b>Step 2–3.</b> Same shape as Merge Sort: <code>c=1</code>, <code>f(n)=n=n^c</code> → Case 2.</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">Time = Θ(n log n)</span>. (Kadane's algorithm later does this in O(n), but this is the clean D&amp;C version.)</div>
+
+  <h3>Example 5 — Karatsuba fast multiplication</h3>
+  <p>Multiplying two n-digit numbers. Naive = O(n²). Karatsuba splits each number in half and cleverly uses only <strong>3</strong> recursive multiplications instead of 4.</p>
+  <div class="step"><b>Step 1.</b> 3 sub-problems (<code>a=3</code>), each half the digits (<code>b=2</code>), with O(n) additions/shifts to combine (<code>f(n)=n</code>). → <code>T(n) = 3T(n/2) + n</code>.</div>
+  <div class="step"><b>Step 2.</b> <code>c = log₂3 ≈ 1.585</code> → <code>n^c = n^1.585</code>.</div>
+  <div class="step"><b>Step 3.</b> <code>f(n)=n = n¹</code> &lt; <code>n^1.585</code> → Case 1 (leaves dominate).</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">Time = Θ(n^1.585)</span> — faster than naive O(n²). This is the payoff of using fewer sub-problems.</div>
+
+  <div class="callout ok">💡 <strong>Pattern to notice:</strong> reducing <code>a</code> (fewer recursive calls) lowers the exponent <code>c = log_b a</code> and can turn O(n²) into something sub-quadratic. That's the whole trick behind Karatsuba and Strassen.</div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section id="practice">
+  <h2>3. Practice Questions</h2>
+  <p style="color:var(--muted)">Try each on paper, then click <strong>🔒 Reveal answer</strong>. Focus on the <em>method</em>: identify a, b, f(n), find c, compare, conclude.</p>
+
+  <p class="q"><span class="num">1</span>An algorithm splits the input into <strong>2 halves</strong> and does <code>O(1)</code> combine work. Write the recurrence and solve it. <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=2, b=2, f(n)=1</code> → <code>T(n) = 2T(n/2) + 1</code>.</p>
+    <p><code>c = log₂2 = 1</code>, <code>n^c = n</code>. Compare <code>f(n)=1 &lt; n</code> → <strong>Case 1</strong> (leaves dominate).</p>
+    <p class="ok-text">T(n) = Θ(n).</p>
+    <p class="callout">Intuition: a full binary recursion tree with n leaves already has ~n nodes, so even O(1) work each totals O(n). (This is why "tree traversal" style D&amp;C is linear.)</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>Solve <code>T(n) = 7T(n/2) + n²</code> (this is Strassen's matrix multiplication recurrence). <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=7, b=2, f(n)=n²</code>. <code>c = log₂7 ≈ 2.807</code> → <code>n^c ≈ n^2.807</code>.</p>
+    <p>Compare <code>f(n)=n² &lt; n^2.807</code> → <strong>Case 1</strong>.</p>
+    <p class="ok-text">T(n) = Θ(n^log₂7) ≈ Θ(n^2.807)</p> — faster than naive matrix multiply's O(n³).
+  </div></details>
+
+  <p class="q"><span class="num">3</span>Use a <strong>recursion tree</strong> to solve <code>T(n) = 2T(n/2) + n</code>, then state the number of levels and work per level. <span class="tag">Recursion Tree</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Work per level is constant at <code>n</code> (level i has <code>2ⁱ</code> nodes each doing <code>n/2ⁱ</code> work = <code>n</code>). Number of levels until size 1 = <code>log₂n</code>.</p>
+    <p>Total = <code>n × log₂n</code>.</p>
+    <p class="ok-text">T(n) = Θ(n log n).</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>Here is pseudocode. Identify whether it's divide and conquer, write its recurrence, and give its time complexity. <span class="tag">Code → recurrence</span></p>
+  <pre><code>Power(x, n):               # compute x^n
+    if n == 0: return 1
+    half = Power(x, n/2)
+    if n is even: return half * half
+    else:         return half * half * x</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Yes — it's D&amp;C ("exponentiation by squaring"). It makes <strong>ONE</strong> recursive call on half the exponent, then O(1) multiplications.</p>
+    <p><code>a=1, b=2, f(n)=1</code> → <code>T(n) = T(n/2) + 1</code>. <code>c = log₂1 = 0</code>, <code>n^c=1</code>, <code>f(n)=1</code> → Case 2.</p>
+    <p class="ok-text">Time = Θ(log n)</p> — far better than the naive O(n) loop of multiplying x by itself n times.
+  </div></details>
+
+  <p class="q"><span class="num">5</span>Solve <code>T(n) = 4T(n/2) + n²</code>. (Watch for the tie!) <span class="tag">Master</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=4, b=2, f(n)=n²</code>. <code>c = log₂4 = 2</code> → <code>n^c = n²</code>.</p>
+    <p>Compare <code>f(n)=n² = n²</code> → tie → <strong>Case 2</strong>.</p>
+    <p class="ok-text">T(n) = Θ(n² log n).</p>
+    <p class="callout">Contrast: <code>4T(n/2)+n</code> would be Case 1 → Θ(n²). The combine cost matters!</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Give BOTH the time and space complexity of Merge Sort, and explain the space part specifically. <span class="tag">Time + Space</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Time:</b> <code>T(n)=2T(n/2)+n</code> → <span class="ok-text">Θ(n log n)</span>.</p>
+    <p><b>Space:</b> the <code>Merge</code> step allocates a temporary array of size up to n to hold merged results → <code>O(n)</code> auxiliary. The recursion stack adds <code>O(log n)</code>. Dominant term:</p>
+    <p class="ok-text">Space = O(n).</p>
+    <p class="callout">This is Merge Sort's main weakness vs Quick Sort, which sorts in place with only O(log n) average stack space.</p>
+  </div></details>
+
+  <p class="q"><span class="num">7</span>A buggy "D&amp;C" algorithm splits into 2 halves but then does <code>O(n²)</code> combine work. Solve <code>T(n) = 2T(n/2) + n²</code> and say which part of the cost dominates. <span class="tag">Master / Case 3</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>a=2, b=2, f(n)=n²</code>. <code>c = log₂2 = 1</code>, <code>n^c=n</code>. Compare <code>f(n)=n² &gt; n</code> → <strong>Case 3</strong>.</p>
+    <p class="ok-text">T(n) = Θ(n²).</p>
+    <p>The <strong>top-level combine work dominates</strong> — the recursion barely matters because the expensive O(n²) combine at the root already costs as much as everything below it combined.</p>
+  </div></details>
+
+  <p class="q"><span class="num">8</span>Binary Search is D&amp;C with <code>a=1</code>. Explain in words why having only ONE sub-problem (instead of two) makes it <code>Θ(log n)</code> rather than <code>Θ(n)</code>. <span class="tag">Conceptual</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>With <code>a=1</code>, each step <em>throws away</em> half the data and recurses on only the surviving half — so the recursion tree is a single <strong>path</strong>, not a branching tree. Its length is the number of halvings to reach size 1 = <code>log₂n</code>, and each node does O(1) work → <span class="ok-text">Θ(log n)</span>.</p>
+    <p>Merge Sort has <code>a=2</code>: it keeps BOTH halves, so the tree branches and has ~n leaves, forcing at least Θ(n) total work (and Θ(n log n) with the linear merge). The difference between "keep one half" and "keep both halves" is the difference between logarithmic and linear+.</p>
+  </div></details>
+</section>
+
+<footer>Divide and Conquer · Worked examples + hidden-answer practice · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
