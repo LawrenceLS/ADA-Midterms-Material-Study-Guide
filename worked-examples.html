@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worked Examples — Complexity &amp; Amortized Analysis</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .tree{font-family:"SF Mono",Consolas,Monaco,monospace;white-space:pre;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-size:0.85rem;color:#d6e0ff;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🔬 Worked Examples: Time, Space &amp; Amortized Cost</h1>
+  <p>Step-by-step solutions using Master Theorem, Recursion Tree, Aggregate &amp; Accounting methods.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#time">Time Complexity — Master Theorem &amp; Recursion Tree</a></li>
+    <li><a href="#space">Space Complexity — counting memory</a></li>
+    <li><a href="#amortized">Amortized Cost — Aggregate &amp; Accounting</a></li>
+    <li><a href="#cheatsheet">Cheat Sheet</a></li>
+  </ol>
+</nav>
+
+<!-- ===================== TIME ===================== -->
+<section id="time">
+  <h2>1. Time Complexity</h2>
+
+  <h3>Method A — The Master Theorem</h3>
+  <p>For any divide-and-conquer recurrence of the form:</p>
+  <pre><code>T(n) = a · T(n/b) + f(n)
+
+a = number of sub-problems      (a ≥ 1)
+b = factor the input shrinks by (b > 1)
+f(n) = work done OUTSIDE the recursion (divide + combine)</code></pre>
+  <p>Compute the <strong>critical exponent</strong> <code>c = log<sub>b</sub>(a)</code>, then compare <code>f(n)</code> against <code>n<sup>c</sup></code>:</p>
+  <table>
+    <tr><th>Case</th><th>Compare</th><th>Who dominates</th><th>Answer</th></tr>
+    <tr><td>1</td><td><code>f(n)</code> &lt; <code>n<sup>c</sup></code></td><td>the leaves (recursion) win</td><td><code>Θ(n<sup>c</sup>)</code></td></tr>
+    <tr><td>2</td><td><code>f(n)</code> = <code>n<sup>c</sup></code></td><td>tie — every level costs the same</td><td><code>Θ(n<sup>c</sup> log n)</code></td></tr>
+    <tr><td>3</td><td><code>f(n)</code> &gt; <code>n<sup>c</sup></code></td><td>the root (top work) wins</td><td><code>Θ(f(n))</code></td></tr>
+  </table>
+
+  <h4>Worked Example 1 — Merge Sort</h4>
+  <div class="step"><b>Step 1 — Identify a, b, f(n).</b> Merge Sort splits into 2 halves and merges in linear time → <code>a=2, b=2, f(n)=n</code>. So <code>T(n)=2T(n/2)+n</code>.</div>
+  <div class="step"><b>Step 2 — Critical exponent.</b> <code>c = log<sub>2</sub>2 = 1</code>, so <code>n<sup>c</sup> = n<sup>1</sup> = n</code>.</div>
+  <div class="step"><b>Step 3 — Compare.</b> <code>f(n) = n</code> vs <code>n<sup>c</sup> = n</code> → <strong>equal → Case 2</strong>.</div>
+  <div class="step"><b>Step 4 — Conclude.</b> <span class="ok-text">T(n) = Θ(n log n)</span>.</div>
+
+  <h4>Worked Example 2 — Binary Search</h4>
+  <div class="step"><b>Step 1.</b> One sub-problem of half size, constant comparison → <code>a=1, b=2, f(n)=1</code>. <code>T(n)=T(n/2)+1</code>.</div>
+  <div class="step"><b>Step 2.</b> <code>c = log<sub>2</sub>1 = 0</code>, so <code>n<sup>c</sup> = n<sup>0</sup> = 1</code>.</div>
+  <div class="step"><b>Step 3.</b> <code>f(n)=1</code> vs <code>n<sup>c</sup>=1</code> → equal → Case 2.</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">T(n) = Θ(log n)</span>.</div>
+
+  <h4>Worked Example 3 — Case 1 (leaves win)</h4>
+  <p><code>T(n) = 4T(n/2) + n</code> &nbsp;(e.g., a naive matrix sub-problem split).</p>
+  <div class="step"><b>Step 1.</b> <code>a=4, b=2, f(n)=n</code>.</div>
+  <div class="step"><b>Step 2.</b> <code>c = log<sub>2</sub>4 = 2</code> → <code>n<sup>c</sup> = n<sup>2</sup></code>.</div>
+  <div class="step"><b>Step 3.</b> <code>f(n)=n</code> &lt; <code>n<sup>2</sup></code> → Case 1 (the recursion dominates).</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">T(n) = Θ(n<sup>2</sup>)</span>.</div>
+
+  <h4>Worked Example 4 — Case 3 (root wins)</h4>
+  <p><code>T(n) = 2T(n/2) + n<sup>2</sup></code>.</p>
+  <div class="step"><b>Step 1.</b> <code>a=2, b=2, f(n)=n<sup>2</sup></code>.</div>
+  <div class="step"><b>Step 2.</b> <code>c = log<sub>2</sub>2 = 1</code> → <code>n<sup>c</sup>=n</code>.</div>
+  <div class="step"><b>Step 3.</b> <code>f(n)=n<sup>2</sup></code> &gt; <code>n</code> → Case 3 (top-level work dominates).</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">T(n) = Θ(n<sup>2</sup>)</span>.</div>
+
+  <h3>Method B — The Recursion Tree</h3>
+  <p>When you want to <em>see why</em> the Master Theorem works (or when it doesn't apply), draw the tree. Rule: <strong>sum the work at each level, then sum all levels.</strong></p>
+
+  <h4>Worked Example 5 — Merge Sort via recursion tree</h4>
+  <p>For <code>T(n) = 2T(n/2) + n</code>, each node is labelled with the <em>combine work</em> it does:</p>
+  <div class="tree">Level 0:                 n                      → work = n
+                       /    \
+Level 1:            n/2      n/2                 → work = n/2 + n/2 = n
+                   /   \    /   \
+Level 2:        n/4   n/4  n/4   n/4             → work = 4 · (n/4) = n
+                 ...        ...
+Level k:    (2^k nodes each doing n/2^k work)   → work = n
+                 ...
+Leaves:     n nodes, each O(1)                  → work = n</div>
+  <div class="step"><b>Step 1 — Work per level.</b> Every level sums to exactly <code>n</code>. (Twice as many nodes, each doing half the work → cancels.)</div>
+  <div class="step"><b>Step 2 — Number of levels.</b> The input halves each level until size 1: that's <code>log<sub>2</sub>n</code> levels (plus the leaf level).</div>
+  <div class="step"><b>Step 3 — Total.</b> <code>(work per level) × (number of levels) = n × log n</code>.</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">T(n) = Θ(n log n)</span> — matching the Master Theorem. ✓</div>
+
+  <h4>Worked Example 6 — Unbalanced tree: <code>T(n) = T(n/3) + T(2n/3) + n</code></h4>
+  <p>The Master Theorem doesn't apply (uneven split), so the tree is the right tool.</p>
+  <div class="step"><b>Step 1 — Work per level.</b> At the root: <code>n</code>. Children do <code>n/3 + 2n/3 = n</code>. Every full level still sums to <code>n</code>.</div>
+  <div class="step"><b>Step 2 — Height.</b> The <em>longest</em> path shrinks by the slowest factor (×2/3 each time). It reaches size 1 after about <code>log<sub>3/2</sub>n</code> levels.</div>
+  <div class="step"><b>Step 3 — Total.</b> Upper bound = <code>n</code> per level × <code>log<sub>3/2</sub>n</code> levels = <code>O(n log n)</code>. (Lower bound is similar.)</div>
+  <div class="step"><b>Step 4.</b> <span class="ok-text">T(n) = Θ(n log n)</span>.</div>
+</section>
+
+<!-- ===================== SPACE ===================== -->
+<section id="space">
+  <h2>2. Space Complexity</h2>
+  <p>Space complexity = <strong>extra</strong> memory an algorithm needs <em>beyond the input</em>. Count two things:</p>
+  <ol>
+    <li><strong>Auxiliary data structures</strong> you allocate (temp arrays, hash maps, output buffers).</li>
+    <li><strong>Recursion stack depth</strong> — each in-flight recursive call keeps a stack frame (its local variables + return address). Max depth = stack space.</li>
+  </ol>
+  <div class="callout">⚠️ Key subtlety: it's the <strong>maximum depth of the call stack at any one moment</strong>, not the total number of calls. Two sibling recursive calls run one-after-another, so only one is on the stack at a time.</div>
+
+  <h4>Worked Example 7 — Merge Sort space</h4>
+  <div class="step"><b>Aux structures:</b> the merge step needs a temporary array to hold the merged result → up to <code>O(n)</code>.</div>
+  <div class="step"><b>Stack depth:</b> recursion is <code>log n</code> deep → <code>O(log n)</code>.</div>
+  <div class="step"><b>Total:</b> <code>O(n) + O(log n)</code> → dominant term → <span class="ok-text">Space = O(n)</span>.</div>
+
+  <h4>Worked Example 8 — Quick Sort space (in-place)</h4>
+  <div class="step"><b>Aux structures:</b> none — it partitions in place by swapping → <code>O(1)</code>.</div>
+  <div class="step"><b>Stack depth (average):</b> balanced partitions → depth <code>O(log n)</code> → <span class="ok-text">Space = O(log n)</span>.</div>
+  <div class="step"><b>Stack depth (worst):</b> fully unbalanced (sorted input, bad pivot) → depth <code>O(n)</code> → <span class="bad-text">Space = O(n)</span>.</div>
+
+  <h4>Worked Example 9 — Recursive vs iterative sum</h4>
+  <pre><code># Recursive — O(n) stack depth (n nested calls before any return)
+def sum_rec(arr, i):
+    if i == len(arr): return 0
+    return arr[i] + sum_rec(arr, i+1)
+
+# Iterative — O(1) extra space (one accumulator, reused)
+def sum_iter(arr):
+    total = 0
+    for x in arr: total += x
+    return total</code></pre>
+  <div class="step"><b>Recursive:</b> the call chain <code>sum_rec(0)→sum_rec(1)→…→sum_rec(n)</code> all sit on the stack simultaneously before any returns → <span class="bad-text">O(n)</span> space.</div>
+  <div class="step"><b>Iterative:</b> one variable reused → <span class="ok-text">O(1)</span> space. Same time, very different memory.</div>
+
+  <div class="callout ok">💡 <strong>Time vs space trade-off:</strong> Memoization/DP speeds up time (avoids recomputation) by <em>spending</em> memory to store results. They often pull in opposite directions.</div>
+</section>
+
+<!-- ===================== AMORTIZED ===================== -->
+<section id="amortized">
+  <h2>3. Amortized Cost</h2>
+  <p><strong>Amortized cost = the average cost per operation over a whole sequence</strong>, used when a rare operation is expensive but most are cheap. It is NOT probability — it's a guaranteed average over the worst-case sequence.</p>
+
+  <h3>Method A — Aggregate Method</h3>
+  <p>Formula: <code>amortized cost = (total cost of n operations) / n</code>. Find the total, divide by n.</p>
+
+  <h4>Worked Example 10 — Dynamic array (doubling) via Aggregate</h4>
+  <p>A list that <strong>doubles capacity</strong> when full. A normal <code>append</code> is <code>O(1)</code>; a resize copies all current elements (<code>O(n)</code>).</p>
+  <div class="step"><b>Step 1 — Cost of the cheap part.</b> n appends, each costing 1 to write the element → <code>n</code>.</div>
+  <div class="step"><b>Step 2 — Cost of resizes.</b> Resizes happen at sizes 1, 2, 4, 8, …, n. Copy work = <code>1+2+4+…+n</code>, a geometric series ≈ <code>2n</code>.</div>
+  <div class="step"><b>Step 3 — Total.</b> <code>n (writes) + 2n (copies) = 3n</code>.</div>
+  <div class="step"><b>Step 4 — Divide.</b> <code>3n / n = 3</code> → <span class="ok-text">amortized O(1) per append</span>.</div>
+  <div class="callout warn">Note: a <em>single</em> append can still cost O(n) (the one that triggers the big copy). Amortized O(1) means that across <em>any</em> sequence, the average is constant.</div>
+
+  <h3>Method B — Accounting (Banker's) Method</h3>
+  <p>Assign each operation an <strong>amortized charge</strong> (a made-up price). If the charge &gt; real cost, the surplus is stored as <strong>credit</strong> on the data structure. If the charge &lt; real cost, stored credit pays the difference. <strong>Rule: the credit balance must never go negative.</strong> If you can keep it ≥ 0 with a constant charge, that charge IS the amortized cost.</p>
+
+  <h4>Worked Example 11 — Dynamic array via Accounting</h4>
+  <div class="step"><b>Step 1 — Pick a charge.</b> Charge <strong>3</strong> per append.</div>
+  <div class="step"><b>Step 2 — Allocate the 3 coins.</b>
+    <br>• 1 coin pays to insert the new element itself.
+    <br>• 1 coin is saved on the new element, to later pay to copy <em>itself</em> during the next resize.
+    <br>• 1 coin is saved to pay to copy one <em>older</em> element that has already "spent" its own saved coin.
+  </div>
+  <div class="step"><b>Step 3 — Check the invariant at a resize.</b> When the array of size n doubles, every one of the n elements needs to be copied. By the scheme above, each element arrived carrying enough credit to fund its own move → the bank balance never goes negative. ✓</div>
+  <div class="step"><b>Step 4 — Conclude.</b> Constant charge of 3 suffices → <span class="ok-text">amortized O(1)</span>. (Matches the aggregate answer.)</div>
+
+  <h4>Worked Example 12 — Stack with multipop via Aggregate</h4>
+  <p>Operations: <code>push</code> (cost 1), <code>pop</code> (cost 1), <code>multipop(k)</code> (pops k items, cost = items actually removed).</p>
+  <div class="step"><b>Step 1 — Key observation.</b> An element can only be popped <em>once</em>, and only after it was pushed.</div>
+  <div class="step"><b>Step 2 — Bound total pops.</b> Over n operations, total pushes ≤ n, so total pops (across all pop/multipop) ≤ n too.</div>
+  <div class="step"><b>Step 3 — Total cost.</b> <code>pushes + pops ≤ n + n = 2n</code>.</div>
+  <div class="step"><b>Step 4 — Divide.</b> <code>2n/n = 2</code> → <span class="ok-text">amortized O(1) per operation</span>, even though one multipop can cost O(n).</div>
+
+  <h4>Worked Example 13 — Stack with multipop via Accounting</h4>
+  <div class="step"><b>Charge:</b> <code>push</code> = 2, <code>pop</code>/<code>multipop</code> = 0.</div>
+  <div class="step"><b>Allocate:</b> of push's 2 coins, 1 pays the push now; 1 is taped onto the element as a "prepaid pop."</div>
+  <div class="step"><b>Invariant:</b> when an element is popped (by pop or multipop), its prepaid coin covers the cost → the balance never goes negative.</div>
+  <div class="step"><b>Conclude:</b> all amortized charges are ≤ 2 = constant → <span class="ok-text">O(1) amortized</span>.</div>
+
+  <h4>Worked Example 14 — Binary counter increment via Aggregate</h4>
+  <p>Incrementing a k-bit binary counter n times. Cost = number of bits flipped.</p>
+  <div class="step"><b>Step 1 — How often each bit flips.</b> Bit 0 flips every increment (n times); bit 1 every 2nd (n/2); bit 2 every 4th (n/4); bit i → n/2<sup>i</sup> times.</div>
+  <div class="step"><b>Step 2 — Total flips.</b> <code>n + n/2 + n/4 + … &lt; 2n</code> (geometric series).</div>
+  <div class="step"><b>Step 3 — Divide.</b> <code>&lt; 2n / n = 2</code> → <span class="ok-text">amortized O(1) per increment</span>, even though one increment (e.g. 0111→1000) flips many bits.</div>
+
+  <h4>Worked Example 15 — Binary counter via Accounting</h4>
+  <div class="step"><b>Charge:</b> 2 per <code>set-bit-to-1</code> operation.</div>
+  <div class="step"><b>Allocate:</b> 1 coin flips the bit 0→1 now; 1 coin is stored <em>on that 1-bit</em>, prepaying its future flip back to 0.</div>
+  <div class="step"><b>Invariant:</b> each increment sets <em>at most one</em> bit to 1 (the rest of the work is carries that flip 1→0, already prepaid). So each increment's real cost is covered by at most 2 coins.</div>
+  <div class="step"><b>Conclude:</b> <span class="ok-text">amortized O(1) per increment</span>.</div>
+
+  <div class="callout">
+    <strong>Aggregate vs Accounting — when to use which?</strong><br>
+    • <strong>Aggregate</strong>: easiest when you can directly bound the <em>total</em> work of n operations (geometric series, "each element popped once"). Gives one average for all operation types.<br>
+    • <strong>Accounting</strong>: better when you want to assign <em>different</em> charges to different operations, or prove an invariant intuitively ("every element carries prepaid credit"). Must verify the balance never goes negative.
+  </div>
+</section>
+
+<!-- ===================== CHEAT SHEET ===================== -->
+<section id="cheatsheet">
+  <h2>4. Cheat Sheet</h2>
+  <table>
+    <tr><th>Concept</th><th>Method</th><th>Core move</th></tr>
+    <tr><td>Time (D&amp;C)</td><td>Master Theorem</td><td>Find <code>c=log<sub>b</sub>a</code>; compare <code>f(n)</code> vs <code>n<sup>c</sup></code> → 3 cases</td></tr>
+    <tr><td>Time (any recurrence)</td><td>Recursion Tree</td><td>Work per level × number of levels</td></tr>
+    <tr><td>Space</td><td>Count</td><td>Aux structures + max recursion-stack depth</td></tr>
+    <tr><td>Amortized</td><td>Aggregate</td><td>Total cost of n ops ÷ n</td></tr>
+    <tr><td>Amortized</td><td>Accounting</td><td>Constant charge per op; keep credit ≥ 0</td></tr>
+  </table>
+  <table>
+    <tr><th>Algorithm</th><th>Time</th><th>Space</th></tr>
+    <tr><td>Binary Search</td><td>Θ(log n)</td><td>O(1) iter / O(log n) rec</td></tr>
+    <tr><td>Merge Sort</td><td>Θ(n log n)</td><td>O(n)</td></tr>
+    <tr><td>Quick Sort</td><td>Θ(n log n) avg, O(n²) worst</td><td>O(log n) avg, O(n) worst</td></tr>
+    <tr><td>Dynamic array append</td><td>O(1) amortized</td><td>O(n)</td></tr>
+    <tr><td>Binary counter increment</td><td>O(1) amortized</td><td>O(k) bits</td></tr>
+  </table>
+</section>
+
+<footer>Worked examples companion to your algorithm analysis study guide · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
