@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Techniques Deep Dive — Accounting, Recursion Tree, Linearity &amp; Geometric</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:1.9rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .tree{font-family:"SF Mono",Consolas,Monaco,monospace;white-space:pre;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-size:0.85rem;color:#d6e0ff;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  .recipe{background:var(--code-bg);border:1px dashed var(--accent);border-radius:10px;padding:14px 18px;margin:14px 0;}
+  .recipe b{color:var(--accent);}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🛠️ Techniques Deep Dive</h1>
+  <p>Four methods, explained as step-by-step processes: Accounting Method · Recursion Tree · Linearity of Expectation · Geometric Distribution.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#accounting">Amortized — Accounting (Banker's) Method</a></li>
+    <li><a href="#tree">Time Complexity — Recursion Tree Method</a></li>
+    <li><a href="#linearity">Randomized — Linearity of Expectation</a></li>
+    <li><a href="#geometric">Randomized — Geometric Distribution</a></li>
+  </ol>
+</nav>
+
+<!-- ============ ACCOUNTING ============ -->
+<section id="accounting">
+  <h2>1. Amortized Cost — The Accounting (Banker's) Method</h2>
+
+  <h3>The idea</h3>
+  <p>Some operations are rarely expensive but usually cheap. The accounting method assigns each operation a <strong>made-up price called the amortized charge</strong>. When the charge is MORE than the real cost, the leftover is saved as <strong>credit</strong> stored "on" the data structure. When an operation's real cost is MORE than its charge, we spend the stored credit to cover the difference.</p>
+  <p>If we can pick charges so that <strong>the stored credit never goes negative</strong>, then the total charges ≥ total real cost — so the charges are a valid upper bound on the average cost. The charge you picked IS the amortized cost.</p>
+
+  <div class="recipe">
+    <b>The 4-step recipe:</b>
+    <ol style="margin:8px 0 0;">
+      <li><b>Assign a charge</b> to each operation type (a constant you choose).</li>
+      <li><b>Decide where credit is stored</b> — usually "on" specific elements or structure state.</li>
+      <li><b>Check the invariant</b>: at every point, is there enough stored credit to pay for the expensive operations when they happen? Prove credit ≥ 0 always.</li>
+      <li><b>Conclude</b>: the (constant) charge is the amortized cost per operation.</li>
+    </ol>
+  </div>
+
+  <h3>Worked Example — Dynamic array that doubles</h3>
+  <p>An array doubles capacity when full. A normal append is cheap (write 1 element); a resize copies all current elements (expensive, O(n)).</p>
+  <div class="step"><b>Step 1 — Assign a charge.</b> Charge <strong>3 coins</strong> per append. (We'll justify why 3 works.)</div>
+  <div class="step"><b>Step 2 — Where does the credit go?</b> Split the 3 coins:
+    <br>• <b>Coin 1</b> — pays the real cost of writing the new element right now.
+    <br>• <b>Coin 2</b> — saved <em>on the new element itself</em>, to pay to copy <em>itself</em> during the next resize.
+    <br>• <b>Coin 3</b> — saved to pay to copy one <em>older</em> element that already spent its own saved coin in a previous resize.
+  </div>
+  <div class="step"><b>Step 3 — Check the invariant at a resize.</b> Consider an array that just filled up at size n and must double. The last n/2 elements were each appended since the previous resize, so each arrived carrying coins 2 and 3. Those saved coins are exactly enough to pay to move all n elements (the n/2 newest pay for themselves AND for the n/2 older ones). <span class="ok-text">Credit never goes negative.</span> ✓</div>
+  <div class="step"><b>Step 4 — Conclude.</b> A constant charge of 3 covers everything → <span class="ok-text">amortized O(1) per append</span>.</div>
+  <div class="callout">Compare with the <em>aggregate</em> method, which got the same answer by summing <code>n + 2n = 3n</code> total and dividing by n = 3. Accounting gives the same 3, but via a "prepaid credit" story that's easier to extend to trickier structures.</div>
+
+  <h3>Second Worked Example — Stack with multipop</h3>
+  <p>Operations: <code>push</code> (cost 1), <code>multipop(k)</code> (pops up to k items, cost = items actually popped).</p>
+  <div class="step"><b>Step 1 — Charge.</b> <code>push</code> = 2, <code>multipop</code> = 0.</div>
+  <div class="step"><b>Step 2 — Store credit.</b> Of push's 2 coins, 1 pays the push now; 1 is taped onto the pushed element as a "prepaid pop."</div>
+  <div class="step"><b>Step 3 — Invariant.</b> Every element on the stack carries 1 prepaid coin. When multipop removes it, that coin pays for the pop → charge of 0 for multipop is fine, credit never negative.</div>
+  <div class="step"><b>Step 4 — Conclude.</b> Max charge is 2 (constant) → <span class="ok-text">amortized O(1) per operation</span>, even though one multipop can really cost O(n).</div>
+</section>
+
+<!-- ============ RECURSION TREE ============ -->
+<section id="tree">
+  <h2>2. Time Complexity — The Recursion Tree Method</h2>
+
+  <h3>The idea</h3>
+  <p>A recursion tree makes a recurrence <em>visual</em>. Each node represents one call and is labelled with the work that call does <strong>outside</strong> its own recursive calls (the <code>f(n)</code> part). You then: sum the work on each level, then sum across all levels. This both <em>solves</em> the recurrence and shows you <em>why</em> the answer is what it is.</p>
+
+  <div class="recipe">
+    <b>The 5-step recipe:</b>
+    <ol style="margin:8px 0 0;">
+      <li><b>Draw the root</b> with its non-recursive work <code>f(n)</code>.</li>
+      <li><b>Branch</b>: a node of size n spawns <code>a</code> children, each of size <code>n/b</code>.</li>
+      <li><b>Work per level</b>: at level i there are <code>aⁱ</code> nodes, each doing <code>f(n/bⁱ)</code> work → multiply.</li>
+      <li><b>Count levels</b>: the size shrinks by b each level until it hits the base case → about <code>log_b(n)</code> levels.</li>
+      <li><b>Sum</b> the per-level work across all levels (watch whether it's constant, increasing, or decreasing — that's which term dominates).</li>
+    </ol>
+  </div>
+
+  <h3>Worked Example — <code>T(n) = 2T(n/2) + n</code> (Merge Sort)</h3>
+  <div class="tree">Level 0:            n                → 1 node  × n      = n
+                   /   \
+Level 1:        n/2     n/2           → 2 nodes × n/2    = n
+                / \     / \
+Level 2:    n/4 n/4  n/4 n/4          → 4 nodes × n/4    = n
+                 ...
+Level i:    2^i nodes × n/2^i         = n
+                 ...
+Leaves:     n nodes × O(1)            = n</div>
+  <div class="step"><b>Step 1–3 — Work per level.</b> At level i: <code>2ⁱ</code> nodes, each doing <code>n/2ⁱ</code> work → product = <code>n</code>. <strong>Every level sums to exactly n</strong> (the <code>2ⁱ</code> and <code>1/2ⁱ</code> cancel).</div>
+  <div class="step"><b>Step 4 — Levels.</b> Size goes <code>n → n/2 → n/4 → … → 1</code>: that's <code>log₂n</code> levels.</div>
+  <div class="step"><b>Step 5 — Sum.</b> <code>n</code> per level × <code>log₂n</code> levels = <code>n log n</code>.</div>
+  <div class="step"><b>Answer.</b> <span class="ok-text">T(n) = Θ(n log n)</span>.</div>
+
+  <h3>Second Worked Example — <code>T(n) = 3T(n/4) + n</code> (work shrinks per level)</h3>
+  <div class="step"><b>Work per level.</b> Level i: <code>3ⁱ</code> nodes × <code>n/4ⁱ</code> work = <code>n·(3/4)ⁱ</code>. This <strong>decreases</strong> geometrically as i grows.</div>
+  <div class="step"><b>Levels.</b> Shrinking by 4 each time → <code>log₄n</code> levels.</div>
+  <div class="step"><b>Sum.</b> <code>n · Σ(3/4)ⁱ</code>. A decreasing geometric series is dominated by its <em>first</em> term, so the sum is <code>n · (constant) = O(n)</code>. The <strong>root dominates</strong>.</div>
+  <div class="step"><b>Answer.</b> <span class="ok-text">T(n) = Θ(n)</span>. (Matches Master Theorem Case 3.)</div>
+
+  <div class="callout ok">💡 <strong>Pattern recognition:</strong> if per-level work is <em>constant</em> → multiply by #levels (Θ(n log n) style). If it <em>decreases</em> → the root/top dominates (Θ(f(n))). If it <em>increases</em> → the leaves/bottom dominate (Θ(n^(log_b a))).</div>
+</section>
+
+<!-- ============ LINEARITY ============ -->
+<section id="linearity">
+  <h2>3. Randomized — Linearity of Expectation</h2>
+
+  <h3>The idea</h3>
+  <p>Expected value is a weighted average: <code>E[X] = Σ (value × probability)</code>. Computing it directly is often painful. <strong>Linearity of expectation</strong> is the escape hatch:</p>
+  <pre><code>E[X₁ + X₂ + … + Xₙ] = E[X₁] + E[X₂] + … + E[Xₙ]</code></pre>
+  <p>This is true <strong>ALWAYS</strong> — even when the variables are <em>dependent</em> on each other. That's what makes it magical: you break a scary total into tiny, easy pieces, compute each piece's expectation separately, and add.</p>
+
+  <div class="recipe">
+    <b>The 4-step recipe (indicator-variable trick):</b>
+    <ol style="margin:8px 0 0;">
+      <li><b>Define the total</b> you care about as a sum: <code>X = X₁ + X₂ + … </code></li>
+      <li><b>Make each Xᵢ an indicator</b>: <code>Xᵢ = 1</code> if event i happens, <code>0</code> otherwise.</li>
+      <li><b>Find E[Xᵢ]</b>. For an indicator, <code>E[Xᵢ] = Pr[event i happens]</code> (because <code>1·p + 0·(1−p) = p</code>).</li>
+      <li><b>Add them up</b>: <code>E[X] = Σ Pr[event i]</code>. Done — no dependency worries.</li>
+    </ol>
+  </div>
+
+  <h3>Worked Example — Hat check problem</h3>
+  <p><b>Problem:</b> n people throw their hats in a pile and each grabs a random hat (a uniformly random permutation). What is the expected number of people who get their OWN hat back?</p>
+  <div class="step"><b>Step 1 — Define the total.</b> Let <code>X</code> = number of people who get their own hat. Write <code>X = X₁ + X₂ + … + Xₙ</code>.</div>
+  <div class="step"><b>Step 2 — Indicators.</b> <code>Xᵢ = 1</code> if person i gets their own hat, else 0.</div>
+  <div class="step"><b>Step 3 — E[Xᵢ].</b> Person i is equally likely to get any of the n hats, so <code>Pr[own hat] = 1/n</code>. Therefore <code>E[Xᵢ] = 1/n</code>.</div>
+  <div class="step"><b>Step 4 — Add.</b> <code>E[X] = Σ (1/n) = n × (1/n) = </code><span class="ok-text">1</span>.</div>
+  <div class="callout">Beautiful result: no matter how many people, <strong>on average exactly 1</strong> gets their own hat. Note the <code>Xᵢ</code> are NOT independent (if n−1 people get their own hat, the last one must too) — but linearity doesn't care. That's the whole point.</div>
+
+  <h3>Second Worked Example — Expected comparisons / "number of heads"</h3>
+  <p><b>Problem:</b> Flip a biased coin (heads probability p) n times. Expected number of heads?</p>
+  <div class="step"><b>Step 1.</b> <code>X = X₁ + … + Xₙ</code> where <code>Xᵢ=1</code> if flip i is heads.</div>
+  <div class="step"><b>Step 2–3.</b> <code>E[Xᵢ] = Pr[heads] = p</code>.</div>
+  <div class="step"><b>Step 4.</b> <code>E[X] = n·p</code>. (For a fair coin p=1/2 → n/2 heads, as expected.) <span class="ok-text">E = np</span></div>
+</section>
+
+<!-- ============ GEOMETRIC ============ -->
+<section id="geometric">
+  <h2>4. Randomized — Geometric Distribution</h2>
+
+  <h3>The idea</h3>
+  <p>You repeat an independent trial that succeeds with probability <code>p</code> each time, and you stop at the first success. The number of trials until (and including) that first success follows a <strong>geometric distribution</strong>. The headline fact:</p>
+  <pre><code>E[number of trials until first success] = 1 / p</code></pre>
+  <p>Intuition: if something works 1 time in p, you expect to wait <code>1/p</code> tries. (Success 1-in-6 → expect 6 tries.)</p>
+
+  <div class="recipe">
+    <b>The 3-step recipe:</b>
+    <ol style="margin:8px 0 0;">
+      <li><b>Identify the trial</b> and its success probability <code>p</code> (per attempt, independent).</li>
+      <li><b>Confirm you're counting trials-until-first-success</b> (that's what geometric measures).</li>
+      <li><b>Apply <code>E = 1/p</code></b>. (If you also need the probability of exactly k trials, it's <code>(1−p)^(k−1)·p</code>.)</li>
+    </ol>
+  </div>
+
+  <h3>Worked Example — Coin flips until heads</h3>
+  <div class="step"><b>Step 1.</b> Trial = one coin flip; success = heads; <code>p = 1/2</code>.</div>
+  <div class="step"><b>Step 2.</b> We want the number of flips until the first heads → geometric.</div>
+  <div class="step"><b>Step 3.</b> <code>E = 1/p = 1/(1/2) = </code><span class="ok-text">2 flips</span>.</div>
+  <div class="step"><b>Verify by the full formula.</b> <code>E = Σ k·(1/2)^(k−1)·(1/2) = 1·½ + 2·¼ + 3·⅛ + … = 2</code>. ✓</div>
+
+  <h3>Second Worked Example — Rolling until a 6</h3>
+  <div class="step"><b>Step 1.</b> Trial = one die roll; success = rolling a 6; <code>p = 1/6</code>.</div>
+  <div class="step"><b>Step 2–3.</b> <code>E = 1/p = 1/(1/6) = </code><span class="ok-text">6 rolls</span>.</div>
+
+  <h3>Why this matters for algorithms</h3>
+  <p>Many randomized algorithms <strong>retry a random attempt until it succeeds</strong>: e.g. keep picking a random pivot until the split is "good enough," or re-hash until no collision. If each attempt succeeds with constant probability <code>p ≥ ½</code>, the expected number of retries is <code>1/p ≤ 2</code> — a small constant. That constant number of cheap retries is exactly why such algorithms are fast <em>in expectation</em>.</p>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section id="practice" style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;">
+  <h2>5. Practice Questions</h2>
+  <p style="color:var(--muted)">Work each with the matching recipe, then click <strong>🔒 Reveal answer</strong>.</p>
+
+  <p class="q"><span class="num">1</span><b>Accounting:</b> A dynamic array that <em>doubles</em> also supports <code>pop</code> (remove last element, cost 1). Using the accounting method, what constant charge per <code>append</code> covers both appends and the resize copies? <span class="tag">Accounting</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Charge <strong>3</strong> per append (pop is charge 1, which equals its real cost, so it needs no credit). Allocation: 1 coin writes the element; 2 coins are saved on the element to prepay its own future copy and one older element's copy during the next doubling.</p>
+    <p><b>Invariant:</b> each of the newest n/2 elements carries 2 saved coins → enough to move all n elements at a resize. Credit never negative.</p>
+    <p class="ok-text">Amortized O(1) per operation.</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span><b>Accounting:</b> A binary counter increment flips bits (costly carries). Assign a charge per "set a bit to 1" so increments are amortized O(1), and state where credit is stored. <span class="tag">Accounting</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Charge <strong>2</strong> each time a bit is set 0→1: 1 coin does the set now; 1 coin is stored <em>on that 1-bit</em>, prepaying its eventual flip back to 0.</p>
+    <p><b>Invariant:</b> every 1-bit carries exactly 1 saved coin. An increment sets at most one bit to 1 (the rest of the work is carries flipping 1→0, already prepaid). So each increment costs ≤ 2 charged coins.</p>
+    <p class="ok-text">Amortized O(1) per increment.</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span><b>Recursion tree:</b> Solve <code>T(n) = 2T(n/2) + n²</code> by drawing the tree. State whether root, middle, or leaves dominate. <span class="tag">Recursion Tree</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Work at level i: <code>2ⁱ</code> nodes × <code>(n/2ⁱ)²</code> = <code>2ⁱ · n²/4ⁱ</code> = <code>n²·(1/2)ⁱ</code>. This <strong>decreases</strong> geometrically.</p>
+    <p>Sum: <code>n² · Σ(1/2)ⁱ</code> = <code>n² · (constant ≤ 2)</code> = <code>Θ(n²)</code>. The <strong>root dominates</strong> (the top level's n² swamps everything below).</p>
+    <p class="ok-text">T(n) = Θ(n²).</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span><b>Recursion tree:</b> Solve <code>T(n) = 4T(n/2) + n</code>. Which part dominates? <span class="tag">Recursion Tree</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Work at level i: <code>4ⁱ</code> nodes × <code>n/2ⁱ</code> = <code>n·2ⁱ</code>. This <strong>increases</strong> geometrically → dominated by the <em>last</em> level (the leaves).</p>
+    <p>Number of levels: <code>log₂n</code>. At the leaf level i = log₂n, work = <code>n·2^(log₂n) = n·n = n²</code>.</p>
+    <p class="ok-text">T(n) = Θ(n²)</p> — the <strong>leaves dominate</strong>. (Matches Master Theorem Case 1: <code>c = log₂4 = 2</code>.)</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span><b>Linearity:</b> Roll n fair dice. What is the expected sum of all the faces? <span class="tag">Linearity</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>X = X₁+…+Xₙ</code>, where <code>Xᵢ</code> is the face of die i. <code>E[Xᵢ] = 3.5</code> (expected value of one fair die).</p>
+    <p>By linearity: <code>E[X] = n × 3.5 = </code><span class="ok-text">3.5n</span>. No need to consider the (huge) joint distribution of all dice.</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span><b>Linearity:</b> In a random permutation of 1..n, an "ascent" is a position i where element i &lt; element i+1. There are n−1 adjacent pairs. Expected number of ascents? <span class="tag">Linearity</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Let <code>Xᵢ = 1</code> if position i is an ascent, for i = 1..n−1. For any adjacent pair, the two values are equally likely to be in increasing or decreasing order → <code>Pr[ascent] = 1/2</code>, so <code>E[Xᵢ] = 1/2</code>.</p>
+    <p>By linearity: <code>E[total] = (n−1) × 1/2 = </code><span class="ok-text">(n−1)/2</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">7</span><b>Geometric:</b> A randomized algorithm picks a random pivot; the split is "good" with probability 1/2. What is the expected number of pivot picks until a good split? <span class="tag">Geometric</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Trial = one pivot pick; success = good split; <code>p = 1/2</code>. Geometric → <code>E = 1/p = 2</code>.</p>
+    <p class="ok-text">Expected 2 picks.</p> A constant, which is why injecting this retry doesn't change the asymptotic running time.
+  </div></details>
+
+  <p class="q"><span class="num">8</span><b>Geometric:</b> A hash insertion collides with probability 1/4 and must retry. Expected number of attempts to place one key? And the probability it takes exactly 3 attempts? <span class="tag">Geometric</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Success = no collision, <code>p = 1 − 1/4 = 3/4</code>.</p>
+    <p><b>Expected attempts:</b> <code>E = 1/p = 1/(3/4) = 4/3 ≈ </code><span class="ok-text">1.33 attempts</span>.</p>
+    <p><b>Exactly 3 attempts:</b> fail, fail, succeed = <code>(1/4)·(1/4)·(3/4) = 3/64 ≈ </code><span class="ok-text">0.047</span> (using <code>(1−p)^(k−1)·p</code> with k=3).</p>
+  </div></details>
+</section>
+
+<footer>Techniques Deep Dive · Accounting · Recursion Tree · Linearity · Geometric · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
