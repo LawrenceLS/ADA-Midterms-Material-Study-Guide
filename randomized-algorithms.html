@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randomized Algorithms — Worked Examples &amp; Practice</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🎲 Randomized Algorithms</h1>
+  <p>Worked examples step by step, then practice questions with hidden answers.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#concept">The core idea &amp; expected value</a></li>
+    <li><a href="#types">Las Vegas vs Monte Carlo</a></li>
+    <li><a href="#worked">Worked Examples (step by step)</a></li>
+    <li><a href="#practice">Practice Questions (answers hidden)</a></li>
+  </ol>
+</nav>
+
+<!-- ============ CONCEPT ============ -->
+<section id="concept">
+  <h2>1. The Core Idea</h2>
+  <p>A <strong>randomized algorithm</strong> makes random choices while it runs. The point is to defend against bad inputs: instead of letting an adversary design the one input that triggers our worst case, we scramble our own decisions so that <em>no</em> fixed input can reliably be bad. The running time (or correctness) then becomes a matter of <strong>expectation</strong> — an average over the algorithm's own coin flips, not over the inputs.</p>
+
+  <h3>Expected value — the one formula you need</h3>
+  <pre><code>E[X] = Σ (value × probability of that value)</code></pre>
+  <p>Example: a fair die → <code>E = (1+2+3+4+5+6)/6 = 3.5</code>.</p>
+  <div class="callout">
+    <strong>Linearity of expectation</strong> (hugely useful): <code>E[X + Y] = E[X] + E[Y]</code> — ALWAYS, even if X and Y are dependent. This lets you break a messy total into simple pieces and add their expectations.
+  </div>
+  <div class="callout ok">
+    <strong>Geometric distribution</strong>: if each independent trial succeeds with probability <code>p</code>, the expected number of trials until the first success is <code>1/p</code>. (Flip a fair coin until heads → <code>1/(1/2) = 2</code> flips.)
+  </div>
+</section>
+
+<!-- ============ TYPES ============ -->
+<section id="types">
+  <h2>2. Two Flavours</h2>
+  <table>
+    <tr><th>Type</th><th>Always correct?</th><th>Running time?</th><th>Example</th></tr>
+    <tr><td><strong>Las Vegas</strong></td><td>✅ Yes — answer is always right</td><td>Random (expected bound)</td><td>Randomized Quick Sort</td></tr>
+    <tr><td><strong>Monte Carlo</strong></td><td>⚠️ Maybe wrong with small probability</td><td>Fixed/bounded</td><td>Miller-Rabin primality test</td></tr>
+  </table>
+  <p>Mnemonic: <strong>Las Vegas</strong> = you always leave with the <em>right answer</em> but gamble on <em>how long</em> it takes. <strong>Monte Carlo</strong> = it finishes in a fixed time but you gamble on <em>correctness</em>.</p>
+</section>
+
+<!-- ============ WORKED ============ -->
+<section id="worked">
+  <h2>3. Worked Examples</h2>
+
+  <h3>Example 1 — Randomized Quick Sort</h3>
+  <pre><code>QuickSort(A):
+    if length(A) &lt;= 1: return A
+    pivot = A[ RANDOM index ]        # &lt;-- the randomization
+    left  = elements &lt; pivot
+    right = elements &gt; pivot
+    return QuickSort(left) + [pivot] + QuickSort(right)</code></pre>
+  <div class="step"><b>Step 1 — Why randomize?</b> With a fixed pivot (always the first element), a <em>sorted</em> input makes every partition lopsided (n−1 and 0), giving the worst case <code>O(n²)</code>. A random pivot means no particular input can force that.</div>
+  <div class="step"><b>Step 2 — Expected-time recurrence.</b> A random pivot splits roughly in half on average, so <code>E[T(n)] = 2·E[T(n/2)] + O(n)</code> (the O(n) is the partition pass).</div>
+  <div class="step"><b>Step 3 — Solve it.</b> This is the Merge Sort recurrence: <code>a=2, b=2, f(n)=n</code>, <code>c=log₂2=1</code>, <code>f(n)=n=n^c</code> → Case 2 → <span class="ok-text">E[T(n)] = O(n log n)</span>.</div>
+  <div class="step"><b>Step 4 — Why it holds even with uneven splits.</b> A random pivot gives a split at least as balanced as 1/4 : 3/4 with probability ≥ 1/2. A constant-fraction split keeps the recursion depth <code>O(log n)</code>, so with O(n) work per level the expected total stays <code>O(n log n)</code>.</div>
+  <div class="step"><b>On the O-graph:</b> expected case = the <code>O(n log n)</code> curve; the worst case <code>O(n²)</code> sits above it but is astronomically unlikely.</div>
+
+  <h3>Example 2 — The "number of comparisons" view (indicator variables)</h3>
+  <p>A cleaner proof of Quick Sort's <code>O(n log n)</code> uses <strong>indicator random variables</strong>.</p>
+  <div class="step"><b>Step 1.</b> Let <code>X</code> = total comparisons. Define <code>X<sub>ij</sub> = 1</code> if elements of rank i and j are ever compared, else 0. Then <code>X = Σ X<sub>ij</sub></code>.</div>
+  <div class="step"><b>Step 2 — Linearity.</b> <code>E[X] = Σ E[X<sub>ij</sub>] = Σ Pr[i and j compared]</code>.</div>
+  <div class="step"><b>Step 3 — The probability.</b> Ranks i and j are compared iff one of them is the first pivot chosen from the range between them (j−i+1 elements). That probability is <code>2/(j−i+1)</code>.</div>
+  <div class="step"><b>Step 4 — Sum.</b> <code>E[X] = Σ 2/(j−i+1)</code> which is a sum of harmonic series terms → <code>O(n log n)</code>. ∎</div>
+
+  <h3>Example 3 — Randomized version of Binary Search</h3>
+  <p>Standard Binary Search is deterministic <code>O(log n)</code> (always halves). A randomized variant picks a <em>random</em> split point instead of the exact middle.</p>
+  <div class="step"><b>Step 1.</b> Each step still discards, on average, a constant fraction of the array (a random pivot removes ~half the range in expectation).</div>
+  <div class="step"><b>Step 2.</b> Expected recurrence is still <code>E[T(n)] = E[T(fraction·n)] + O(1)</code> with a constant fraction &lt; 1 → <span class="ok-text">O(log n) expected</span>.</div>
+  <div class="callout">Lesson: randomization doesn't always speed things up — here it stays logarithmic. It's mainly a tool to <em>avoid worst cases</em>, not a magic speed boost.</div>
+
+  <h3>Example 4 — "Modify and prove" (what exams ask)</h3>
+  <div class="step"><b>Modify:</b> take a deterministic algorithm and inject a random choice (e.g., replace "pivot = first element" with "pivot = random element").</div>
+  <div class="step"><b>Prove:</b> write <code>E[T(n)]</code> as a recurrence (or via indicator variables) and solve it to show <code>O(n log n)</code> expected.</div>
+  <div class="step"><b>Estimate:</b> match the result to the matching curve on the Big-O graph (<code>O(n log n)</code> for the expected case).</div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section id="practice">
+  <h2>4. Practice Questions</h2>
+  <p style="color:var(--muted)">Try each yourself, then click <strong>🔒 Reveal answer</strong>. Use the expected-value formula, linearity, or the geometric-distribution fact where helpful.</p>
+
+  <p class="q"><span class="num">1</span>You roll a fair six-sided die. What is the expected value of the outcome? Show the calculation. <span class="tag">Expected value</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>E[X] = Σ value × probability = (1+2+3+4+5+6) × (1/6) = 21/6 = 3.5</code>.</p>
+    <p class="ok-text">Expected value = 3.5.</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>You roll a die repeatedly until you get a 6. What is the expected number of rolls? <span class="tag">Geometric</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Each roll succeeds (gets a 6) with probability <code>p = 1/6</code>. For a geometric distribution the expected number of trials until first success is <code>1/p</code>.</p>
+    <p><code>E = 1 / (1/6) = </code><span class="ok-text">6 rolls</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span>Explain why deterministic Quick Sort (pivot = first element) is <code>O(n²)</code> on an already-sorted array, and how a random pivot fixes it. <span class="tag">Reasoning</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Sorted input <code>[1,2,3,4,5]</code>, pivot = first (1): everything is larger, so <code>left=[]</code>, <code>right=[2,3,4,5]</code> — the split is n−1 and 0 (completely unbalanced). The next level repeats with pivot 2, and so on for n levels. Each level does O(n) partition work → <code>n × n = </code><span class="bad-text">O(n²)</span>. Recurrence <code>T(n)=T(n−1)+O(n)=O(n²)</code>.</p>
+    <p><b>Random pivot fix:</b> the pivot is now a random element, so on average it lands near the middle and gives a balanced split. No specific input can force lopsided splits because the choice is random, not positional → <span class="ok-text">expected O(n log n)</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>Write the recurrence for the <strong>expected</strong> running time of randomized Quick Sort and solve it with the Master Theorem. <span class="tag">Proof</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>With a random pivot the expected split is balanced: <code>E[T(n)] = 2·E[T(n/2)] + O(n)</code>.</p>
+    <p>Master Theorem: <code>a=2, b=2, f(n)=n</code>, <code>c=log₂2=1</code>, <code>n^c=n</code>, <code>f(n)=n=n^c</code> → Case 2.</p>
+    <p class="ok-text">E[T(n)] = O(n log n).</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span>In randomized Quick Sort, what's the probability that two specific elements of ranks i and j (i &lt; j) are ever directly compared? <span class="tag">Indicator variables</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Consider the <code>j − i + 1</code> elements whose ranks lie between i and j (inclusive). Elements i and j are compared if and only if one of <em>them</em> is the FIRST of this whole group to be chosen as a pivot. (If some middle element is picked first, i and j get separated into different partitions and never compared.)</p>
+    <p>Each of the <code>j − i + 1</code> elements is equally likely to be picked first, and 2 of them (i and j) cause a comparison →</p>
+    <p class="ok-text">Pr[i and j compared] = 2 / (j − i + 1).</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Classify each as Las Vegas or Monte Carlo: (a) randomized Quick Sort, (b) a primality test that may call a composite "prime" with probability 1%, (c) picking a random array index and returning that element as an "approximate median." <span class="tag">Classify</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <ul>
+      <li>(a) <span class="ok-text">Las Vegas</span> — always sorts correctly; only the running time is random.</li>
+      <li>(b) <span class="ok-text">Monte Carlo</span> — fixed running time, but the answer can be wrong with small probability.</li>
+      <li>(c) <span class="ok-text">Monte Carlo</span> — fast and fixed-time, but the returned element may not actually be the median.</li>
+    </ul>
+    <p>Rule: Las Vegas gambles on <em>time</em>, Monte Carlo gambles on <em>correctness</em>.</p>
+  </details>
+
+  <p class="q"><span class="num">7</span>Using linearity of expectation: n people randomly swap name tags (a uniformly random permutation). What is the expected number of people who end up with their OWN tag? <span class="tag">Linearity</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Let <code>X<sub>i</sub> = 1</code> if person i gets their own tag. In a uniform random permutation, <code>Pr[X<sub>i</sub>=1] = 1/n</code> (their tag is equally likely to be any of the n positions).</p>
+    <p>By linearity: <code>E[total] = Σ E[X<sub>i</sub>] = n × (1/n) = </code><span class="ok-text">1</span>.</p>
+    <p>Neat result: regardless of how many people, on average exactly <strong>1</strong> person keeps their own tag. (This is the classic "fixed points of a random permutation" fact.)</p>
+  </div></details>
+</section>
+
+<footer>Randomized Algorithms · Worked examples + hidden-answer practice · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
