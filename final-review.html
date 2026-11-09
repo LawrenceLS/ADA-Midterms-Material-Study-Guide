@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Final Review — Full Recap &amp; Mixed Exam</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .pill{display:inline-block;font-size:0.72rem;padding:2px 10px;border-radius:20px;background:var(--card2);color:var(--accent2);border:1px solid var(--border);margin-right:6px;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  .checklist{list-style:none;padding-left:0;}
+  .checklist li{padding:6px 0 6px 30px;position:relative;}
+  .checklist li::before{content:"☐";position:absolute;left:0;color:var(--accent);font-size:1.2rem;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🎓 Final Review — Full Recap &amp; Mixed Exam</h1>
+  <p>A one-page recap of everything, plus a 20-question mixed test covering all topics. Answers hidden.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#recap">Part A — Rapid Recap (all topics)</a></li>
+    <li><a href="#formulas">Part B — Formula &amp; Method Sheet</a></li>
+    <li><a href="#exam">Part C — Mixed Exam (20 questions, hidden answers)</a></li>
+    <li><a href="#checklist">Part D — Final Checklist</a></li>
+  </ol>
+</nav>
+
+<!-- ========== RECAP ========== -->
+<section id="recap">
+  <h2>Part A — Rapid Recap</h2>
+
+  <h3><span class="pill">0</span>Asymptotic Notation</h3>
+  <p><code>O</code> = "at most" (upper bound), <code>Ω</code> = "at least" (lower bound), <code>Θ</code> = "exactly" (both, tight). Drop constants and lower-order terms. Growth order best→worst: <code>O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(2ⁿ) &lt; O(n!)</code>. "Case" (best/worst/avg) and "symbol" (O/Ω/Θ) are independent axes.</p>
+
+  <h3><span class="pill">1</span>Divide and Conquer</h3>
+  <p>Divide → Conquer (recurse) → Combine. Analyse with <code>T(n)=a·T(n/b)+f(n)</code>. Master Theorem: let <code>c=log_b a</code>; compare <code>f(n)</code> vs <code>n^c</code>: slower→Θ(n^c) [Case 1, leaves win]; equal→Θ(n^c log n) [Case 2]; faster→Θ(f(n)) [Case 3, root wins]. Recursion tree = work-per-level × #levels.</p>
+
+  <h3><span class="pill">2</span>Time &amp; Space Complexity</h3>
+  <p><b>Time</b> = how operations grow. <b>Space</b> = extra memory = auxiliary structures + max recursion-stack depth. Time ≠ space (e.g. recursive Fibonacci is O(2ⁿ) time but O(n) space).</p>
+
+  <h3><span class="pill">3</span>Amortized Analysis</h3>
+  <p>Average cost per operation over a whole sequence (not probability). <b>Aggregate</b>: total ÷ n. <b>Accounting</b>: assign a constant charge, store surplus as credit, keep credit ≥ 0. <b>Potential</b>: energy function Φ. Dynamic array append = O(1) amortized.</p>
+
+  <h3><span class="pill">4</span>Randomized Algorithms</h3>
+  <p>Random choices defend against adversarial inputs. <code>E[X]=Σ value·prob</code>. <b>Linearity</b>: <code>E[ΣXᵢ]=ΣE[Xᵢ]</code> (always). <b>Geometric</b>: expected trials to first success = <code>1/p</code>. Randomized Quick Sort = expected O(n log n). Las Vegas (always correct, random time) vs Monte Carlo (fixed time, maybe wrong).</p>
+
+  <h3><span class="pill">5</span>Greedy Algorithms</h3>
+  <p>Take the locally best choice, never reconsider. Correct only if <b>greedy choice property</b> (local choice is safe) + <b>optimal substructure</b> hold. Prove with the <b>exchange argument</b>; disprove with <b>one counterexample</b>. Activity Selection (earliest finish) works; coin change {1,3,4} fails.</p>
+</section>
+
+<!-- ========== FORMULAS ========== -->
+<section id="formulas">
+  <h2>Part B — Formula &amp; Method Sheet</h2>
+  <table>
+    <tr><th>Technique</th><th>Key formula / move</th></tr>
+    <tr><td>Master Theorem</td><td><code>c=log_b a</code>; compare <code>f(n)</code> vs <code>n^c</code> → 3 cases</td></tr>
+    <tr><td>Recursion tree</td><td>level i work = <code>aⁱ·f(n/bⁱ)</code>; sum over <code>log_b n</code> levels</td></tr>
+    <tr><td>Geometric series</td><td><code>1+2+4+…+n ≈ 2n</code>; <code>1+½+¼+… &lt; 2</code></td></tr>
+    <tr><td>Amortized (aggregate)</td><td>amortized = total cost of n ops ÷ n</td></tr>
+    <tr><td>Amortized (accounting)</td><td>constant charge; credit balance ≥ 0 always</td></tr>
+    <tr><td>Expected value</td><td><code>E[X] = Σ value × probability</code></td></tr>
+    <tr><td>Linearity</td><td><code>E[X₁+…+Xₙ] = E[X₁]+…+E[Xₙ]</code></td></tr>
+    <tr><td>Indicator variable</td><td><code>E[Xᵢ] = Pr[event i]</code></td></tr>
+    <tr><td>Geometric distribution</td><td><code>E[trials to first success] = 1/p</code></td></tr>
+    <tr><td>Greedy proof</td><td>exchange argument (prove) / counterexample (disprove)</td></tr>
+  </table>
+  <table>
+    <tr><th>Algorithm</th><th>Time</th><th>Space</th></tr>
+    <tr><td>Binary Search</td><td>Θ(log n)</td><td>O(1) iter / O(log n) rec</td></tr>
+    <tr><td>Merge Sort</td><td>Θ(n log n)</td><td>O(n)</td></tr>
+    <tr><td>Quick Sort</td><td>Θ(n log n) avg, Θ(n²) worst</td><td>O(log n) avg, O(n) worst</td></tr>
+    <tr><td>Karatsuba</td><td>Θ(n^1.585)</td><td>O(n)</td></tr>
+    <tr><td>Dynamic array append</td><td>O(1) amortized</td><td>O(n)</td></tr>
+    <tr><td>Activity Selection</td><td>O(n log n)</td><td>O(1)</td></tr>
+  </table>
+</section>
+
+<!-- ========== EXAM ========== -->
+<section id="exam">
+  <h2>Part C — Mixed Exam</h2>
+  <p style="color:var(--muted)">20 questions spanning every topic, in random order (like a real exam). Attempt each, then click <strong>🔒 Reveal answer</strong>.</p>
+
+  <p class="q"><span class="num">1</span>Solve <code>T(n) = 2T(n/2) + n</code> and name an algorithm with this recurrence. <span class="tag">D&amp;C</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>c=log₂2=1</code>, <code>f(n)=n=n^c</code> → Case 2 → <span class="ok-text">Θ(n log n)</span>. Algorithm: Merge Sort (or D&amp;C max-subarray).</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>What does it mean that Big-O is "only an upper bound"? Give an example of a true-but-useless Big-O statement. <span class="tag">Notation</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Big-O gives a ceiling, not an exact rate — a slower-growing function can have many valid (looser) ceilings. True-but-useless: "Merge Sort is O(n!)" — technically correct (n! is a valid ceiling) but unhelpful; the tight answer is Θ(n log n).</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span>Using the aggregate method, show the amortized cost of append on a doubling array is O(1). <span class="tag">Amortized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>n writes cost n. Resizes at 1,2,4,…,n copy a total of ~2n. Total = 3n. Divide by n → 3 → <span class="ok-text">O(1) amortized</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>A greedy makes change with coins {1,3,4} for amount 6. Does it find the optimal solution? <span class="tag">Greedy</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>No. Greedy: 4+1+1 = <span class="bad-text">3 coins</span>. Optimal: 3+3 = <span class="ok-text">2 coins</span>. One counterexample disproves greedy for this coin system.</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span>Flip a fair coin until heads. Expected number of flips? <span class="tag">Randomized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Geometric with p=1/2 → <code>E=1/p=</code><span class="ok-text">2</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Solve <code>T(n) = T(n/2) + 1</code>. What algorithm is it? <span class="tag">D&amp;C</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>c=log₂1=0</code>, <code>n^c=1=f(n)</code> → Case 2 → <span class="ok-text">Θ(log n)</span>. Algorithm: Binary Search.</p>
+  </div></details>
+
+  <p class="q"><span class="num">7</span>Recursive Fibonacci is O(2ⁿ) time. What is its space complexity, and why isn't it also O(2ⁿ)? <span class="tag">Space</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><span class="ok-text">O(n)</span>. Space = max stack depth, not total calls. The two recursive calls run sequentially, so only one branch (depth ≤ n) is on the stack at a time.</p>
+  </div></details>
+
+  <p class="q"><span class="num">8</span>Write the expected-time recurrence for randomized Quick Sort and give the result. <span class="tag">Randomized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>E[T(n)] = 2·E[T(n/2)] + O(n)</code> → Case 2 → <span class="ok-text">O(n log n)</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">9</span>State the two properties a greedy algorithm needs to be correct. <span class="tag">Greedy</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Greedy choice property</b> (local optimal choice is safe / leads to a global optimum) and <b>optimal substructure</b> (remaining problem is a smaller instance of the same problem).</p>
+  </div></details>
+
+  <p class="q"><span class="num">10</span>Solve <code>T(n) = 3T(n/2) + n</code> (Karatsuba). <span class="tag">D&amp;C</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>c=log₂3≈1.585</code>, <code>f(n)=n &lt; n^1.585</code> → Case 1 → <span class="ok-text">Θ(n^1.585)</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">11</span>Accounting method: what charge per push makes a stack with multipop O(1) amortized, and where is credit stored? <span class="tag">Amortized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Charge <b>2</b> per push: 1 pays the push, 1 is stored on the element to prepay its pop. Multipop charged 0, paid by stored credit. Credit never negative → <span class="ok-text">O(1) amortized</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">12</span>n people get hats back at random. Expected number who get their own hat? Which technique? <span class="tag">Randomized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Linearity of expectation with indicators: <code>Pr[person i own hat]=1/n</code>, so <code>E = n·(1/n) =</code> <span class="ok-text">1</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">13</span>Is Quick Sort's worst case O(n²) or Θ(n²)? Explain the difference in this context. <span class="tag">Notation</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Both are correct for the worst case. <span class="ok-text">Θ(n²)</span> is the tight claim: a bad input (e.g. sorted, with fixed pivot) really achieves ~n² operations. O(n²) just states the ceiling. People usually say "O(n²)" as a worst-case guarantee.</p>
+  </div></details>
+
+  <p class="q"><span class="num">14</span>Give the time AND space complexity of Merge Sort; explain the space. <span class="tag">Space</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Time <span class="ok-text">Θ(n log n)</span>. Space <span class="ok-text">O(n)</span> — the merge step allocates a temp array of size up to n (dominates the O(log n) recursion stack).</p>
+  </div></details>
+
+  <p class="q"><span class="num">15</span>Recursion tree: for <code>T(n)=4T(n/2)+n</code>, does work per level increase, stay constant, or decrease, and what's the result? <span class="tag">D&amp;C</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Level i work = <code>4ⁱ·n/2ⁱ = n·2ⁱ</code> → <b>increases</b> → leaves dominate. At leaf level (i=log₂n): <code>n·2^(log₂n)=n²</code>. Result <span class="ok-text">Θ(n²)</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">16</span>Classify as Las Vegas or Monte Carlo: (a) randomized Quick Sort, (b) a primality test with a 1% false-positive rate. <span class="tag">Randomized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>(a) <span class="ok-text">Las Vegas</span> — always correct, random time. (b) <span class="ok-text">Monte Carlo</span> — fixed time, possibly wrong.</p>
+  </div></details>
+
+  <p class="q"><span class="num">17</span>A greedy for Activity Selection picks the earliest-FINISHING activity. Sketch the exchange argument that this is safe. <span class="tag">Greedy</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Let g finish earliest overall, and o be the first activity in some optimal solution OPT. Since g.finish ≤ o.finish, swapping o for g keeps all later activities compatible and preserves the count. So an optimal solution containing g exists → the greedy choice is safe. Repeat on the remainder. ∎</p>
+  </div></details>
+
+  <p class="q"><span class="num">18</span>Increment a binary counter n times. Total bit flips and amortized cost per increment? <span class="tag">Amortized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Bit i flips n/2ⁱ times; total = <code>n+n/2+n/4+… &lt; 2n</code>. Amortized = <code>&lt;2n/n = 2</code> → <span class="ok-text">O(1) per increment</span>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">19</span>Why does using a RANDOM pivot help Quick Sort, given the worst case is still O(n²)? <span class="tag">Randomized</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>With a fixed pivot an adversary (or just a sorted input) can always trigger O(n²). A random pivot means no specific input can reliably force the worst case — the worst case still exists but is astronomically unlikely, so the <em>expected</em> time is O(n log n).</p>
+  </div></details>
+
+  <p class="q"><span class="num">20</span>Rank these by growth, slowest to fastest: <code>n²</code>, <code>log n</code>, <code>n log n</code>, <code>2ⁿ</code>, <code>n</code>, <code>1</code>, <code>n!</code>. <span class="tag">Notation</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p class="ok-text">1 &lt; log n &lt; n &lt; n log n &lt; n² &lt; 2ⁿ &lt; n!</p>
+  </div></details>
+</section>
+
+<!-- ========== CHECKLIST ========== -->
+<section id="checklist">
+  <h2>Part D — Final Checklist</h2>
+  <p>You're ready when you can confidently say YES to all of these:</p>
+  <ul class="checklist">
+    <li>I can state what O, Ω, Θ mean and explain why time complexity uses O or Θ.</li>
+    <li>I can write a D&amp;C recurrence and solve it with the Master Theorem (all 3 cases).</li>
+    <li>I can solve a recurrence with a recursion tree and say which level dominates.</li>
+    <li>I can compute both time AND space complexity, including recursion-stack depth.</li>
+    <li>I can prove an amortized O(1) bound with both aggregate and accounting methods.</li>
+    <li>I can set up E[X] with indicator variables and apply linearity of expectation.</li>
+    <li>I can use the geometric distribution fact E = 1/p.</li>
+    <li>I can write the expected-time recurrence for randomized Quick Sort.</li>
+    <li>I can state the two greedy properties and prove/disprove a greedy with exchange/counterexample.</li>
+    <li>I can rank the common growth functions from best to worst.</li>
+  </ul>
+  <div class="callout ok">📚 This review draws on all the study-pack files: asymptotic-notation, divide-and-conquer, worked-examples, practice-questions, greedy-algorithms, randomized-algorithms, and techniques-deep-dive. Revisit any topic where a checklist item felt shaky.</div>
+</section>
+
+<footer>Final Review · Full recap + 20-question mixed exam · You've got this! 🍀</footer>
+</div>
+</body>
+</html>
