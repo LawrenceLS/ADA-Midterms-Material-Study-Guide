@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asymptotic Notation — O, Ω, Θ Explained</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .sym{font-size:1.4rem;color:var(--accent2);font-weight:700;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>📐 Asymptotic Notation: O, Ω, Θ</h1>
+  <p>What the symbols mean, how they work, and <strong>why time complexity uses Big-O or Theta</strong>.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#big">The big idea: comparing growth rates</a></li>
+    <li><a href="#symbols">The five symbols &amp; their definitions</a></li>
+    <li><a href="#why">Why use Θ (theta) vs O (big-O)?</a></li>
+    <li><a href="#model">The clean mental model</a></li>
+    <li><a href="#practice">Practice Questions (answers hidden)</a></li>
+  </ol>
+</nav>
+
+<!-- ============ BIG IDEA ============ -->
+<section id="big">
+  <h2>1. The Big Idea</h2>
+  <p>Asymptotic notation describes <strong>how a function grows as <code>n → ∞</code></strong>. We don't care about exact operation counts or constant factors — we care about the <em>shape</em> of growth for large inputs. Why?</p>
+  <ul>
+    <li><strong>Constants don't matter at scale.</strong> An algorithm doing <code>100n</code> operations and one doing <code>3n</code> operations both scale <em>linearly</em> — double the input, double the work. We call both <code>O(n)</code>.</li>
+    <li><strong>Small inputs don't matter.</strong> For tiny n almost anything is fast; the interesting question is behaviour as n gets large.</li>
+  </ul>
+  <p>Think of these symbols as <strong>comparison operators for growth rates</strong> — like <code>≤</code>, <code>≥</code>, <code>=</code>, but for how fast functions grow.</p>
+</section>
+
+<!-- ============ SYMBOLS ============ -->
+<section id="symbols">
+  <h2>2. The Five Symbols</h2>
+  <table>
+    <tr><th>Symbol</th><th>Name</th><th>Analogy</th><th>Meaning (as n→∞)</th></tr>
+    <tr><td><span class="sym">O(f)</span></td><td>Big-O</td><td><code>≤</code></td><td><strong>Upper bound</strong> — grows no faster than f</td></tr>
+    <tr><td><span class="sym">Ω(f)</span></td><td>Big-Omega</td><td><code>≥</code></td><td><strong>Lower bound</strong> — grows at least as fast as f</td></tr>
+    <tr><td><span class="sym">Θ(f)</span></td><td>Big-Theta</td><td><code>=</code></td><td><strong>Tight bound</strong> — grows exactly like f (O and Ω)</td></tr>
+    <tr><td><span class="sym">o(f)</span></td><td>little-o</td><td><code>&lt;</code></td><td>Strictly slower than f</td></tr>
+    <tr><td><span class="sym">ω(f)</span></td><td>little-omega</td><td><code>&gt;</code></td><td>Strictly faster than f</td></tr>
+  </table>
+  <p>The three you need most are <strong>O, Ω, Θ</strong>. Here's each one carefully.</p>
+
+  <h3>Big-O — the ceiling (upper bound)</h3>
+  <p><code>T(n) = O(f(n))</code> means: past some point, <code>T(n)</code> stays at or below a constant multiple of <code>f(n)</code>.</p>
+  <pre><code>∃ c &gt; 0, n₀ ≥ 0  such that  T(n) ≤ c·f(n)   for all n ≥ n₀</code></pre>
+  <ul>
+    <li>The <code>c</code> lets us ignore constant factors (<code>3n</code> and <code>100n</code> are both <code>O(n)</code>).</li>
+    <li>The <code>n₀</code> lets us ignore small inputs (we only care about large n).</li>
+    <li><strong>Only an upper bound.</strong> <code>3n² = O(n²)</code> ✅ — but <code>3n² = O(n³)</code> and even <code>3n² = O(2ⁿ)</code> are <em>also technically true</em>, because those are valid ceilings. Big-O says "no worse than," not "exactly."</li>
+  </ul>
+
+  <h3>Big-Omega — the floor (lower bound)</h3>
+  <p><code>T(n) = Ω(f(n))</code> means: past some point, <code>T(n)</code> stays at or above a constant multiple of <code>f(n)</code>.</p>
+  <pre><code>∃ c &gt; 0, n₀ ≥ 0  such that  T(n) ≥ c·f(n)   for all n ≥ n₀</code></pre>
+  <p>The mirror image of Big-O. <code>3n² = Ω(n²)</code> ✅ and also <code>3n² = Ω(n)</code> (n is a valid floor). Often used to say a <em>problem</em> inherently needs at least some work — e.g. any comparison sort is <code>Ω(n log n)</code>.</p>
+
+  <h3>Big-Theta — the sandwich (tight bound)</h3>
+  <p><code>T(n) = Θ(f(n))</code> means <code>T(n)</code> is <strong>both</strong> <code>O(f(n))</code> <strong>and</strong> <code>Ω(f(n))</code> — f is simultaneously a ceiling and a floor. It grows <em>exactly</em> like f.</p>
+  <pre><code>∃ c₁, c₂ &gt; 0, n₀  such that  c₁·f(n) ≤ T(n) ≤ c₂·f(n)   for all n ≥ n₀</code></pre>
+  <ul>
+    <li><code>3n² + 5n = Θ(n²)</code> ✅ — for large n it's squeezed between, say, <code>1·n²</code> and <code>4·n²</code>.</li>
+    <li><code>3n² = Θ(n³)</code> ❌ — n³ is a valid ceiling but NOT a valid floor (3n² drops below any <code>c·n³</code>).</li>
+  </ul>
+  <div class="callout ok">🧩 <strong>Core relationship:</strong> <code>Θ(f) = O(f) AND Ω(f)</code>. Theta is the strongest, most precise claim — it pins the growth rate down from both sides.</div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section id="why">
+  <h2>3. Why Does Time Complexity Use Θ <em>or</em> O?</h2>
+  <p>This trips everyone up. There are <strong>two separate reasons</strong>, and the confusion comes from mixing up two independent ideas.</p>
+
+  <h3>Reason 1 — O is a weaker claim, Θ is stronger</h3>
+  <p><code>Θ(n log n)</code> says the growth is <em>pinned exactly</em>. <code>O(n log n)</code> only promises <em>no worse than</em> that — it leaves open that it might be faster. When you can prove the tight bound, Θ is more informative. Merge Sort is genuinely <code>Θ(n log n)</code>: it always does about n log n work. Saying "<code>O(n log n)</code>" is true but under-sells it.</p>
+
+  <h3>Reason 2 (the big one) — "case" and "symbol" are INDEPENDENT axes</h3>
+  <p>People confuse two different things:</p>
+  <table>
+    <tr><th>Axis A — which input scenario</th><th>Axis B — which bound symbol</th></tr>
+    <tr><td>best case / worst case / average case</td><td>O / Ω / Θ</td></tr>
+  </table>
+  <p>These are independent — you can put a Θ on a worst case, or an O on a worst case. Example — <strong>Quick Sort</strong>:</p>
+  <table>
+    <tr><th>Scenario</th><th>Tight (Θ) statement</th><th>Also correct</th></tr>
+    <tr><td>Best case</td><td><code>Θ(n log n)</code></td><td><code>O(n log n)</code>, <code>Ω(n log n)</code></td></tr>
+    <tr><td>Worst case</td><td><code>Θ(n²)</code></td><td><code>O(n²)</code></td></tr>
+    <tr><td>Average case</td><td><code>Θ(n log n)</code></td><td>—</td></tr>
+  </table>
+  <p>So Quick Sort's <em>worst case</em> is <code>Θ(n²)</code> (tight — a bad input really hits n²). Each <em>individual scenario</em> has its own tight Θ bound.</p>
+
+  <h3>So why does everyone just say "Quick Sort is O(n²)"?</h3>
+  <ul>
+    <li>Often we only want an <strong>upper-bound guarantee for the worst case</strong> — "it will never be worse than this." Big-O is the safe, conservative promise, and that's usually what matters in practice.</li>
+    <li>Sometimes we genuinely can't (or don't bother to) prove a tight bound, so O is all we can honestly state.</li>
+  </ul>
+  <div class="callout warn">⚠️ <strong>Convention abuse:</strong> many textbooks and interviews write "<code>O</code>" when they technically mean "<code>Θ</code>." When someone says "binary search is <code>O(log n)</code>," they almost always mean it's <em>exactly</em> <code>Θ(log n)</code>. "O" has become the casual default word for "the complexity." Everyone accepts this slight abuse.</div>
+</section>
+
+<!-- ============ MODEL ============ -->
+<section id="model">
+  <h2>4. The Clean Mental Model</h2>
+  <table>
+    <tr><th>Symbol</th><th>Word</th><th>Use it when…</th></tr>
+    <tr><td><code>O</code></td><td>"at most"</td><td>You want (or can only prove) an upper-bound guarantee — "no worse than." Perfect for worst-case promises.</td></tr>
+    <tr><td><code>Ω</code></td><td>"at least"</td><td>You want a lower-bound guarantee — often "this problem inherently needs at least this much work."</td></tr>
+    <tr><td><code>Θ</code></td><td>"exactly"</td><td>You can prove the growth rate precisely (ceiling = floor). The most precise, correct answer.</td></tr>
+  </table>
+  <div class="callout ok">
+    <strong>One-line summary:</strong> O = "at most", Ω = "at least", Θ = "exactly". Time complexity often uses O because we mostly care about worst-case <em>guarantees</em> (ceilings), but Θ is the more precise answer whenever the bound is tight — and much of the time when people write O, they actually mean Θ.
+  </div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section id="practice">
+  <h2>5. Practice Questions</h2>
+  <p style="color:var(--muted)">Decide the answer yourself, then click <strong>🔒 Reveal answer</strong>.</p>
+
+  <p class="q"><span class="num">1</span>True or false: <code>5n² + 3n + 7 = O(n²)</code>. Justify with the definition. <span class="tag">Big-O</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><span class="ok-text">True.</span> We need <code>c, n₀</code> with <code>5n²+3n+7 ≤ c·n²</code>. For <code>n ≥ 1</code>, <code>3n ≤ 3n²</code> and <code>7 ≤ 7n²</code>, so the whole thing ≤ <code>(5+3+7)n² = 15n²</code>. Pick <code>c=15, n₀=1</code>. ✓</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>Is <code>5n² = O(n³)</code>? Is <code>5n² = Θ(n³)</code>? <span class="tag">O vs Θ</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>5n² = O(n³)</code>: <span class="ok-text">True</span> — n³ is a valid ceiling (<code>5n² ≤ 5n³</code> for n ≥ 1). Big-O only requires an upper bound.</p>
+    <p><code>5n² = Θ(n³)</code>: <span class="bad-text">False</span> — Θ needs n³ to also be a <em>lower</em> bound, but <code>5n²</code> eventually falls below any <code>c·n³</code>. So n³ is a ceiling but not a floor → not tight.</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span>Give the tightest (Θ) bound for <code>T(n) = 3n² + 100n + 500</code>. <span class="tag">Θ</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Drop lower-order terms (<code>100n</code>, <code>500</code>) and the constant factor (3). The dominant term is <code>n²</code>.</p>
+    <p class="ok-text">T(n) = Θ(n²).</p>
+    <p>For large n it's sandwiched: e.g. <code>1·n² ≤ T(n) ≤ 4·n²</code> for sufficiently large n.</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>Linear search scans an array left to right for a target. State best-case and worst-case time, each with the tightest symbol. <span class="tag">Case vs symbol</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Best case</b> (target is the first element): 1 comparison → <span class="ok-text">Θ(1)</span>.</p>
+    <p><b>Worst case</b> (target absent or last): n comparisons → <span class="ok-text">Θ(n)</span>.</p>
+    <p>Note how "case" (best/worst) and "symbol" (Θ) are independent — each case gets its own tight Θ bound. You could also loosely say the worst case is <code>O(n)</code>.</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span>Someone says "the running time of this algorithm is <em>at least</em> <code>n log n</code> for every input." Which symbol captures that, and what does it mean? <span class="tag">Ω</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><span class="ok-text">Ω(n log n)</span> — a lower bound. It means the algorithm never does <em>fewer</em> than a constant times <code>n log n</code> operations, regardless of input. (This is exactly the kind of statement used to prove that <em>any</em> comparison-based sort must take Ω(n log n) — you can't beat it.)</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Why is it technically correct, but unhelpful, to say "Merge Sort is <code>O(n!)</code>"? <span class="tag">Conceptual</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>It's <strong>technically true</strong>: <code>n!</code> grows far faster than <code>n log n</code>, so it's a valid (if ridiculously loose) ceiling — Merge Sort certainly never does more than <code>n!</code> work.</p>
+    <p>But it's <strong>unhelpful</strong> because Big-O is most useful when it's <em>tight</em>. The informative statement is <code>Θ(n log n)</code>, which pins the growth exactly. Saying <code>O(n!)</code> wastes the whole point of the notation — it's like saying "this errand will take at most a year" when it actually takes an hour.</p>
+    <p class="callout">Takeaway: Big-O being "only an upper bound" means you should always aim for the <em>tightest</em> one.</p>
+  </div></details>
+
+  <p class="q"><span class="num">7</span>If <code>T(n) = O(n)</code> and also <code>T(n) = Ω(n)</code>, what can you conclude? <span class="tag">Relationship</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><code>n</code> is both a ceiling and a floor for <code>T(n)</code> → by definition <span class="ok-text">T(n) = Θ(n)</span>.</p>
+    <p>This is the formal rule: <strong>Θ(f) holds exactly when both O(f) and Ω(f) hold.</strong></p>
+  </div></details>
+</section>
+
+<footer>Asymptotic Notation (O, Ω, Θ) · Foundational reference for the study pack · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
