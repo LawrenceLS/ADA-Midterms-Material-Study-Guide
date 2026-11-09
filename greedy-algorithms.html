@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greedy Algorithms — Worked Examples &amp; Practice</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  h3{color:var(--accent2);margin-top:28px;}
+  h4{margin-bottom:6px;color:var(--text);}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.92rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;}
+  th{background:var(--card2);color:var(--accent);}
+  tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .callout.warn{border-left-color:var(--warn);}
+  .callout.ok{border-left-color:var(--ok);}
+  .step{border-left:3px solid var(--accent2);padding:4px 0 4px 16px;margin:14px 0;}
+  .step b{color:var(--accent2);}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>🤑 Greedy Algorithms</h1>
+  <p>Worked examples step by step, then practice questions with hidden answers.</p>
+</header>
+
+<nav class="toc">
+  <h2>📑 Contents</h2>
+  <ol>
+    <li><a href="#concept">The core idea &amp; the 2 properties</a></li>
+    <li><a href="#proof">How to PROVE a greedy algorithm (exchange argument)</a></li>
+    <li><a href="#worked">Worked Examples (step by step)</a></li>
+    <li><a href="#practice">Practice Questions (answers hidden)</a></li>
+  </ol>
+</nav>
+
+<!-- ============ CONCEPT ============ -->
+<section id="concept">
+  <h2>1. The Core Idea</h2>
+  <p>A <strong>greedy algorithm</strong> builds a solution one piece at a time, always taking the choice that looks best <em>right now</em> (the "locally optimal" choice), and never going back to reconsider. It's fast and simple — but it's only <strong>correct</strong> when the local choices happen to add up to a globally optimal answer.</p>
+
+  <h3>The 2 properties a greedy algorithm needs</h3>
+  <table>
+    <tr><th>Property</th><th>What it means</th></tr>
+    <tr><td><strong>Greedy Choice Property</strong></td><td>A globally optimal solution can be reached by making the locally optimal (greedy) choice at each step. In other words, the greedy choice is always "safe" — it never ruins your chance at the optimum.</td></tr>
+    <tr><td><strong>Optimal Substructure</strong></td><td>After you make the greedy choice, what's left is a smaller version of the same problem, and an optimal solution to the whole = greedy choice + optimal solution to the remainder.</td></tr>
+  </table>
+  <div class="callout warn">⚠️ If either property fails, greedy gives a wrong (sub-optimal) answer. Proving greedy is really about proving the <strong>greedy choice property</strong>.</div>
+</section>
+
+<!-- ============ PROOF ============ -->
+<section id="proof">
+  <h2>2. How to PROVE Greedy Correctness — the Exchange Argument</h2>
+  <p>This is the standard proof technique and the one exams ask for. The structure:</p>
+  <ol>
+    <li>Let <code>G</code> be the greedy solution and <code>OPT</code> be any optimal solution.</li>
+    <li>Assume (for contradiction) they differ. Find the <strong>first place</strong> they differ.</li>
+    <li><strong>Exchange</strong> OPT's choice at that point for the greedy choice, and show the result is <em>no worse</em> than OPT (still valid, still optimal).</li>
+    <li>Repeat the exchange step-by-step until OPT has been transformed into G without ever getting worse. Therefore G is also optimal. ∎</li>
+  </ol>
+  <div class="callout">To <strong>DISPROVE</strong> a greedy algorithm, you don't need a proof — just <strong>one counterexample</strong> where it produces a worse answer than optimal.</div>
+</section>
+
+<!-- ============ WORKED ============ -->
+<section id="worked">
+  <h2>3. Worked Examples</h2>
+
+  <h3>Example 1 — Activity Selection (the classic correct greedy)</h3>
+  <p><b>Problem:</b> Given activities with start/finish times, select the <em>maximum number</em> that don't overlap.<br>
+  <b>Greedy rule:</b> repeatedly pick the activity that <strong>finishes earliest</strong> among those still compatible.</p>
+  <pre><code>ActivitySelection(activities):
+    sort activities by finish time ascending
+    selected = [ activities[0] ]
+    last_finish = activities[0].finish
+    for a in activities[1:]:
+        if a.start &gt;= last_finish:      # compatible → greedy choice
+            selected.add(a)
+            last_finish = a.finish
+    return selected</code></pre>
+  <div class="step"><b>Step 1 — Trace an example.</b> Activities (start,finish): A(1,4), B(3,5), C(0,6), D(5,7), E(5,9), F(8,10). Sorted by finish: A(1,4), B(3,5), C(0,6), D(5,7), E(5,9), F(8,10).</div>
+  <div class="step"><b>Step 2 — Apply the rule.</b> Pick A (finish 4). Next compatible with start ≥ 4: D(5,7) — pick it (last_finish=7). Next compatible with start ≥ 7: F(8,10) — pick it. Result = {A, D, F} → <span class="ok-text">3 activities</span>.</div>
+  <div class="step"><b>Step 3 — Why it's correct (greedy choice property).</b> The earliest-finishing activity leaves the most time free for everything after it. Swapping any optimal solution's first activity for the earliest-finishing one never reduces the count (exchange argument), so the greedy choice is safe.</div>
+  <div class="step"><b>Step 4 — Optimal substructure.</b> After picking it, the remaining task is "select max activities starting after last_finish" — the same problem, smaller. So greedy builds an optimal solution.</div>
+  <div class="step"><b>Complexity.</b> Dominated by the sort → <span class="ok-text">O(n log n)</span>.</div>
+
+  <h3>Example 2 — Fractional Knapsack</h3>
+  <p><b>Problem:</b> A knapsack of capacity W. Items have value and weight; you may take <em>fractions</em> of an item. Maximize total value.<br>
+  <b>Greedy rule:</b> take items in order of highest <strong>value-per-weight ratio</strong>, filling as much as fits (take a fraction of the last one).</p>
+  <div class="step"><b>Step 1 — Example.</b> W=50. Items: (value, weight) = A(60,10), B(100,20), C(120,30). Ratios: A=6, B=5, C=4 per unit weight.</div>
+  <div class="step"><b>Step 2 — Apply.</b> Take all of A (10kg, value 60). Take all of B (20kg, value 100). Now 20kg left; take 20/30 of C → value 120×(20/30)=80. Total = <span class="ok-text">240</span>.</div>
+  <div class="step"><b>Step 3 — Why correct.</b> Any unit of capacity is best spent on the highest available ratio. If an optimal solution used a lower-ratio unit while a higher-ratio unit was still available, swapping them increases value — contradiction. So greedy is optimal.</div>
+  <div class="callout warn">⚠️ This works ONLY because fractions are allowed. The <strong>0/1 Knapsack</strong> (whole items only) is NOT solvable by this greedy — it needs dynamic programming. (See practice Q4.)</div>
+
+  <h3>Example 3 — Coin Change (when greedy works vs fails)</h3>
+  <p><b>Greedy rule:</b> repeatedly take the largest coin ≤ remaining amount.</p>
+  <div class="step"><b>Works:</b> coins {1,5,10,25}, amount 30 → 25+5 = 2 coins = optimal. This coin system is "canonical" so greedy is always optimal.</div>
+  <div class="step"><b>Fails:</b> coins {1,3,4}, amount 6 → greedy takes 4, then 1+1 = <span class="bad-text">3 coins</span>. Optimal is 3+3 = <span class="ok-text">2 coins</span>. One counterexample disproves greedy for this system.</div>
+  <div class="callout">Lesson: greedy's correctness depends entirely on the specific denominations. Always test a potential counterexample.</div>
+
+  <h3>Example 4 — Full exchange-argument proof (Activity Selection)</h3>
+  <div class="step"><b>Claim:</b> picking the earliest-finishing activity <code>g</code> first is safe.</div>
+  <div class="step"><b>Proof.</b> Let <code>OPT</code> be an optimal solution and <code>o</code> its earliest-finishing activity. Since <code>g</code> finishes earliest of ALL activities, <code>g.finish ≤ o.finish</code>. Replace <code>o</code> with <code>g</code> in OPT. Every other activity in OPT started after <code>o</code> finished, and since <code>g</code> finishes no later than <code>o</code>, they're all still compatible with <code>g</code>. The swap keeps the same number of activities, so the modified solution is still optimal — and it contains the greedy choice. Repeat on the remainder. ∎</div>
+</section>
+
+<!-- ============ PRACTICE ============ -->
+<section id="practice">
+  <h2>4. Practice Questions</h2>
+  <p style="color:var(--muted)">Try each yourself, then click <strong>🔒 Reveal answer</strong>. For "prove/disprove" questions, either give an exchange argument or a single counterexample.</p>
+
+  <p class="q"><span class="num">1</span>You're given jobs each with a deadline and taking 1 unit of time; each completed-by-deadline job earns a profit. A greedy schedules jobs by <strong>highest profit first</strong>, placing each in the latest free slot ≤ its deadline. Trace it on: J1(deadline 2, profit 100), J2(deadline 1, profit 19), J3(deadline 2, profit 27), J4(deadline 1, profit 25), J5(deadline 3, profit 15). <span class="tag">Trace</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Sort by profit desc: J1(100,d2), J3(27,d2), J4(25,d1), J2(19,d1), J5(15,d3).</p>
+    <ul>
+      <li>J1: latest free slot ≤ 2 → slot 2. Schedule: [_, J1, _]</li>
+      <li>J3: latest free ≤ 2 → slot 1. [J3, J1, _]</li>
+      <li>J4: latest free ≤ 1 → slot 1 taken, no earlier slot → skip.</li>
+      <li>J2: latest free ≤ 1 → taken → skip.</li>
+      <li>J5: latest free ≤ 3 → slot 3. [J3, J1, J5]</li>
+    </ul>
+    <p>Selected J3, J1, J5 → <span class="ok-text">total profit = 27+100+15 = 142</span>. (This greedy IS optimal for job sequencing with deadlines.)</p>
+  </div></details>
+
+  <p class="q"><span class="num">2</span>Prove, with an exchange argument, that for Fractional Knapsack, taking items in order of highest value/weight ratio is optimal. <span class="tag">Prove</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Suppose an optimal solution <code>OPT</code> differs from greedy. Then there exist two bits of capacity where OPT puts weight from a <em>lower</em>-ratio item <code>L</code> while a <em>higher</em>-ratio item <code>H</code> is not fully used. Take a small amount <code>δ</code> of capacity: remove δ worth of <code>L</code> and add δ worth of <code>H</code>. Value changes by <code>δ·(ratio_H − ratio_L) &gt; 0</code> — the total value <em>increases</em>. That contradicts OPT being optimal. So no such swap exists, meaning OPT already fills capacity in highest-ratio-first order — exactly what greedy does. ∎</p>
+  </div></details>
+
+  <p class="q"><span class="num">3</span>A greedy for Activity Selection picks the activity with the <strong>earliest start time</strong> first. Disprove it with a counterexample. <span class="tag">Disprove</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Counterexample — three activities [start,finish]:</p>
+    <ul>
+      <li>X = [1, 10] (earliest start, but very long)</li>
+      <li>Y = [2, 4]</li>
+      <li>Z = [5, 8]</li>
+    </ul>
+    <p><b>Earliest-start greedy</b> picks X first; X spans 1–10 and blocks both Y and Z → selects just <span class="bad-text">1 activity</span>.</p>
+    <p><b>Optimal</b> picks Y[2,4] then Z[5,8] → <span class="ok-text">2 activities</span>.</p>
+    <p>One long early-starting activity hogs the timeline. So "earliest start" is NOT optimal — only "earliest finish" is.</p>
+  </div></details>
+
+  <p class="q"><span class="num">4</span>Show that the "highest value/weight ratio first" greedy FAILS for <strong>0/1 Knapsack</strong> (whole items only). <span class="tag">Disprove</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Capacity W=10. Items (value, weight): A(60,10), B(50,5), C(50,5). Ratios: A=6, B=10, C=10.</p>
+    <p><b>Greedy by ratio</b> picks B(w5) then C(w5) → weight 10, value <span class="ok-text">100</span>... wait, that's actually good here. Use a sharper case:</p>
+    <p>W=10. Items: A(60, 10) ratio 6; B(100, 6) ratio ≈16.7; C(100, 6) ratio ≈16.7.</p>
+    <p><b>Greedy by ratio</b> takes B (w6, v100); C won't fit (needs 6, only 4 left); A won't fit → value <span class="bad-text">100</span>.</p>
+    <p><b>Optimal</b> takes A alone (w10, v... 60) — hmm that's worse. The cleanest classic counterexample: W=10, items A(60,10,ratio6), B(100,20...) — let's use the textbook one: W=50, A(60,10,r6), B(100,20,r5), C(120,30,r4). Greedy takes A+B (w30,v160), then can't fit C (needs 30, only 20 left) → <span class="bad-text">160</span>. Optimal (0/1) takes B+C (w50, v<span class="ok-text">220</span>). Greedy loses because it can't take a fraction of C to use the leftover space.</p>
+    <p class="callout">Takeaway: 0/1 Knapsack needs dynamic programming, not greedy. The ratio greedy only works when fractions are allowed.</p>
+  </div></details>
+
+  <p class="q"><span class="num">5</span>Given this pseudocode, state the greedy rule and argue whether it correctly minimizes the number of platforms needed so no two trains overlap at a station. <span class="tag">Analyze</span></p>
+  <pre><code>MinPlatforms(arrivals, departures):
+    sort arrivals asc; sort departures asc
+    platforms = 0; max_platforms = 0; i = 0; j = 0
+    while i &lt; n:
+        if arrivals[i] &lt; departures[j]:
+            platforms += 1; i += 1
+            max_platforms = max(max_platforms, platforms)
+        else:
+            platforms -= 1; j += 1
+    return max_platforms</code></pre>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p><b>Greedy rule:</b> sweep through all arrival/departure events in time order; a platform is needed whenever a train arrives before the next departure, and freed when one departs. Track the running count and its maximum.</p>
+    <p><b>Correct?</b> Yes. The answer equals the <em>maximum number of trains present at the same time</em>, which is a hard lower bound (you can't serve k simultaneous trains with fewer than k platforms). The sweep computes exactly that maximum overlap, so it's both necessary and sufficient →</p>
+    <p class="ok-text">Correct, and optimal. Time O(n log n) (dominated by the two sorts).</p>
+  </div></details>
+
+  <p class="q"><span class="num">6</span>Explain the difference between proving greedy is correct (greedy choice property) and merely showing it gives a good answer on one example. <span class="tag">Conceptual</span></p>
+  <details class="answer"><summary>Reveal answer</summary><div class="body">
+    <p>Showing greedy works on one example proves <strong>nothing</strong> — a wrong greedy can still be right on many inputs. To prove correctness you must show the greedy choice is safe for <em>every</em> possible input, typically via the <strong>exchange argument</strong>: take an arbitrary optimal solution and show it can be transformed into the greedy one without losing optimality.</p>
+    <p>Conversely, to <strong>disprove</strong> greedy you only need <em>one</em> counterexample where it loses to optimal. Asymmetry: proving requires a general argument; disproving requires a single bad case.</p>
+  </div></details>
+</section>
+
+<footer>Greedy Algorithms · Worked examples + hidden-answer practice · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
