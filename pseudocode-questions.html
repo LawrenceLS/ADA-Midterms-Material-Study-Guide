@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pseudocode Analysis — 20 Questions</title>
+<style>
+  :root{
+    --bg:#0f1221;--card:#1a1f35;--card2:#222844;--text:#e6e9f2;--muted:#a6adc8;
+    --accent:#7c9cff;--accent2:#5be3b3;--warn:#ff6b6b;--ok:#5be3b3;--border:#2d3454;--code-bg:#10131f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.65;}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 20px 80px;}
+  header.hero{background:linear-gradient(135deg,#1e2746,#2a1f45);border:1px solid var(--border);border-radius:16px;padding:32px;margin-bottom:28px;}
+  header.hero h1{margin:0 0 8px;font-size:2rem;}
+  header.hero p{margin:4px 0;color:var(--muted);}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:32px;}
+  nav.toc h2{margin-top:0;font-size:1.1rem;color:var(--accent);}
+  nav.toc ol{margin:0;padding-left:20px;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:26px 28px;margin-bottom:28px;}
+  h2{color:var(--accent);border-bottom:2px solid var(--border);padding-bottom:8px;margin-top:0;}
+  code{background:var(--code-bg);padding:2px 6px;border-radius:5px;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.9em;color:#ffd9a0;}
+  pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:16px;overflow-x:auto;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:0.88rem;line-height:1.5;}
+  pre code{background:none;padding:0;color:#d6e0ff;}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.9rem;}
+  th,td{border:1px solid var(--border);padding:9px 12px;text-align:left;vertical-align:top;}
+  th{background:var(--card2);color:var(--accent);}
+  .callout{border-left:4px solid var(--accent);background:var(--card2);padding:12px 18px;border-radius:0 8px 8px 0;margin:16px 0;}
+  .ok-text{color:var(--ok);font-weight:600;}
+  .bad-text{color:var(--warn);font-weight:600;}
+  .step{border-left:3px solid var(--accent2);padding:3px 0 3px 14px;margin:10px 0;}
+  .step b{color:var(--accent2);}
+  .q{font-weight:600;margin:22px 0 8px;}
+  .q .num{display:inline-block;background:var(--accent);color:#0f1221;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;font-size:0.85rem;margin-right:10px;}
+  .tag{display:inline-block;font-size:0.72rem;padding:2px 8px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border);margin-left:6px;vertical-align:middle;}
+  .pc-tag{background:#2a1f45;color:#c9a6ff;border-color:#4a3570;}
+  .answer{background:var(--card2);border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:0 10px 10px 0;padding:0 20px;margin:8px 0 26px;}
+  .answer summary{cursor:pointer;font-weight:600;color:var(--accent2);outline:none;user-select:none;padding:14px 0;list-style:none;}
+  .answer summary::-webkit-details-marker{display:none;}
+  .answer summary::before{content:"🔒 ";}
+  .answer[open] summary::before{content:"🔓 ";}
+  .answer[open] summary{border-bottom:1px solid var(--border);margin-bottom:12px;}
+  .answer .body{padding-bottom:16px;}
+  footer{text-align:center;color:var(--muted);font-size:0.85rem;margin-top:40px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>💻 Pseudocode Analysis — 20 Questions</h1>
+  <p>Read the code, work out the answer, then reveal the step-by-step explanation. Questions tagged <span class="tag pc-tag">pseudocode</span> require reading code; others are conceptual.</p>
+</header>
+
+<nav class="toc">
+  <h2>How to approach pseudocode complexity</h2>
+  <ul>
+    <li><b>Loops:</b> count how many times each runs. A loop <code>0..n</code> is O(n). A loop where the counter <em>multiplies</em> (×2) or <em>divides</em> (/2) is O(log n).</li>
+    <li><b>Nested loops:</b> multiply their counts. Watch for inner loops whose bound depends on the outer variable (often a sum → O(n²)).</li>
+    <li><b>Recursion:</b> write <code>T(n)=a·T(n/b)+f(n)</code> and apply the Master Theorem, or sum the recursion tree.</li>
+    <li><b>Greedy/correctness:</b> find a counterexample to disprove, or give an exchange argument to prove.</li>
+  </ul>
+</nav>
+
+<section>
+  <h2>Questions 1–20</h2>
+
+  <!-- Q1 PC -->
+  <p class="q"><span class="num">1</span>What is the time complexity? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>total = 0
+for i in 1..n:
+    for j in 1..n:
+        total = total + 1</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Outer loop runs n times.</div>
+    <div class="step"><b>Step 2.</b> For each outer iteration, inner loop runs n times.</div>
+    <div class="step"><b>Step 3.</b> Total iterations = n × n = n².</div>
+    <p class="ok-text">Θ(n²).</p>
+  </div></details>
+
+  <!-- Q2 PC -->
+  <p class="q"><span class="num">2</span>What is the time complexity? Note the inner loop's bound. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>count = 0
+for i in 1..n:
+    for j in 1..i:        # note: j goes up to i, not n
+        count = count + 1</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> When i=1 inner runs 1 time; i=2 → 2 times; … i=n → n times.</div>
+    <div class="step"><b>Step 2.</b> Total = 1+2+3+…+n = n(n+1)/2.</div>
+    <div class="step"><b>Step 3.</b> Drop constants/lower terms: n(n+1)/2 = (n²+n)/2 → dominant term n².</div>
+    <p class="ok-text">Θ(n²).</p>
+    <p class="callout">A triangular loop is still O(n²) — it does half the work of a full nested loop, but constants don't change Big-O.</p>
+  </div></details>
+
+  <!-- Q3 PC -->
+  <p class="q"><span class="num">3</span>What is the time complexity? Watch how <code>j</code> changes. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>j = 1
+while j &lt; n:
+    j = j * 2</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> j takes values 1, 2, 4, 8, … doubling each time.</div>
+    <div class="step"><b>Step 2.</b> It stops when j ≥ n, i.e. after 2^k ≥ n → k = log₂n steps.</div>
+    <p class="ok-text">Θ(log n).</p>
+    <p class="callout">Rule of thumb: a counter that multiplies or divides by a constant → logarithmic.</p>
+  </div></details>
+
+  <!-- Q4 PC -->
+  <p class="q"><span class="num">4</span>Give the time complexity of this nested loop. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>for i in 1..n:            # linear
+    j = 1
+    while j &lt; n:          # logarithmic
+        j = j * 2</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Outer loop: n iterations.</div>
+    <div class="step"><b>Step 2.</b> Inner while: log₂n iterations (j doubles).</div>
+    <div class="step"><b>Step 3.</b> Multiply: n × log n.</div>
+    <p class="ok-text">Θ(n log n).</p>
+  </div></details>
+
+  <!-- Q5 PC recursion -->
+  <p class="q"><span class="num">5</span>Determine the recurrence and time complexity. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function f(n):
+    if n &lt;= 1: return 1
+    return f(n-1) + f(n-1)</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Two recursive calls, each on size n−1, plus O(1) work.</div>
+    <div class="step"><b>Step 2.</b> Recurrence: <code>T(n) = 2T(n−1) + O(1)</code>.</div>
+    <div class="step"><b>Step 3.</b> Each level doubles the number of calls: 1, 2, 4, …, 2ⁿ. This is NOT a Master-Theorem (n/b) form — it's a decrement recurrence.</div>
+    <p class="ok-text">Θ(2ⁿ) — exponential.</p>
+    <p class="callout">Trap: <code>n−1</code> (subtract) grows very differently from <code>n/2</code> (divide). Subtracting a constant → exponential; dividing → logarithmic depth.</p>
+  </div></details>
+
+  <!-- Q6 PC recursion -->
+  <p class="q"><span class="num">6</span>Determine the recurrence and time complexity. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function g(n):
+    if n &lt;= 1: return
+    g(n/2)
+    for i in 1..n: print(i)    # O(n) work</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> ONE recursive call on n/2, plus O(n) work. → <code>a=1, b=2, f(n)=n</code>.</div>
+    <div class="step"><b>Step 2.</b> <code>T(n) = T(n/2) + n</code>.</div>
+    <div class="step"><b>Step 3.</b> Recursion tree: work is n, then n/2, then n/4, … a decreasing geometric series summing to ~2n.</div>
+    <p class="ok-text">Θ(n).</p>
+    <p class="callout">Master Theorem check: c=log₂1=0, f(n)=n &gt; n⁰ → Case 3 → Θ(n). ✓</p>
+  </div></details>
+
+  <!-- Q7 PC space -->
+  <p class="q"><span class="num">7</span>What is the SPACE complexity (extra memory)? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function sum(arr, i):
+    if i == length(arr): return 0
+    return arr[i] + sum(arr, i+1)</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> No extra data structures allocated.</div>
+    <div class="step"><b>Step 2.</b> The recursion chain sum(0)→sum(1)→…→sum(n) is n calls deep, all on the stack before any returns.</div>
+    <p class="ok-text">Space = O(n)</p> (from the call stack). An iterative loop version would be O(1).
+  </div></details>
+
+  <!-- Q8 PC amortized -->
+  <p class="q"><span class="num">8</span>This append doubles capacity when full. What is the AMORTIZED cost per append? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function append(x):
+    if size == capacity:
+        newArr = allocate(2 * capacity)   # O(capacity)
+        copy all elements to newArr
+        capacity = 2 * capacity
+    arr[size] = x
+    size = size + 1</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Most appends are O(1) (just write). Occasionally a resize copies all elements, O(n).</div>
+    <div class="step"><b>Step 2.</b> Aggregate over n appends: n writes + copies at sizes 1,2,4,…,n ≈ 2n copies. Total ≈ 3n.</div>
+    <div class="step"><b>Step 3.</b> 3n / n = 3.</div>
+    <p class="ok-text">Amortized O(1) per append</p> (even though a single append can be O(n)).
+  </div></details>
+
+  <!-- Q9 PC greedy correctness -->
+  <p class="q"><span class="num">9</span>This greedy coin change takes the largest coin each time. For coins {1,3,4} and amount 6, is the result optimal? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function makeChange(coins_desc, amount):
+    count = 0
+    for c in coins_desc:       # largest first
+        while amount &gt;= c:
+            amount = amount - c
+            count = count + 1
+    return count</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1 — Trace.</b> amount=6. Largest coin ≤ 6 is 4 → amount=2, count=1. Then coin 3 &gt; 2, skip. Coin 1 → 1,1 → count=3.</div>
+    <div class="step"><b>Step 2 — Greedy result.</b> 4+1+1 = <span class="bad-text">3 coins</span>.</div>
+    <div class="step"><b>Step 3 — Optimal.</b> 3+3 = <span class="ok-text">2 coins</span>.</div>
+    <p><span class="bad-text">Not optimal.</span> This single counterexample disproves greedy for the {1,3,4} system.</p>
+  </div></details>
+
+  <!-- Q10 PC greedy correctness -->
+  <p class="q"><span class="num">10</span>This activity-selection greedy sorts by <b>duration</b> (shortest first). Prove it's incorrect with a counterexample. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function selectActivities(acts):
+    sort acts by (finish - start) ascending   # shortest duration first
+    chosen = []
+    for a in acts:
+        if a compatible with all in chosen:
+            chosen.add(a)
+    return chosen</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1 — Build a counterexample.</b> A=[1,5], B=[4,6], C=[6,10]. Durations: A=4, B=2, C=4.</div>
+    <div class="step"><b>Step 2 — Greedy picks shortest first = B[4,6].</b> B overlaps A (5&gt;4) and touches C → blocks both. chosen = {B} → <span class="bad-text">1 activity</span>.</div>
+    <div class="step"><b>Step 3 — Optimal.</b> A[1,5] + C[6,10] → <span class="ok-text">2 activities</span>.</div>
+    <p><span class="bad-text">Incorrect.</span> Shortest-duration first is not optimal; only earliest-FINISH is provably optimal.</p>
+  </div></details>
+
+  <!-- Q11 PC trace binary search -->
+  <p class="q"><span class="num">11</span>This is binary search. How many iterations (comparisons of <code>arr[mid]</code>) does it take worst-case for n=16? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>lo = 0; hi = n - 1
+while lo &lt;= hi:
+    mid = (lo + hi) / 2
+    if arr[mid] == target: return mid
+    if arr[mid] &lt; target: lo = mid + 1
+    else: hi = mid - 1
+return -1</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Each iteration halves the search range.</div>
+    <div class="step"><b>Step 2.</b> From 16 → 8 → 4 → 2 → 1 → 0, worst-case iterations = log₂16 + 1 ≈ 5.</div>
+    <p class="ok-text">About log₂n = 4–5 iterations; time Θ(log n).</p>
+  </div></details>
+
+  <!-- Q12 PC bug -->
+  <p class="q"><span class="num">12</span>Does this "find max" pseudocode work correctly for ALL integer arrays? If not, fix it. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function findMax(arr):
+    max = 0                 # &lt;-- suspicious initial value
+    for x in arr:
+        if x &gt; max: max = x
+    return max</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1 — Spot the bug.</b> <code>max</code> starts at 0. If every element is negative (e.g. [-5,-2,-9]), no x is &gt; 0, so it wrongly returns 0.</div>
+    <div class="step"><b>Step 2 — Fix.</b> Initialize <code>max = arr[0]</code> (and loop from index 1), or <code>max = -infinity</code>.</div>
+    <p class="bad-text">Not correct for all inputs — fails on all-negative arrays.</p> Time is still Θ(n) once fixed.
+  </div></details>
+
+  <!-- Q13 PC two pointers -->
+  <p class="q"><span class="num">13</span>What is the time complexity of this two-pointer loop (arr sorted)? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>lo = 0; hi = n - 1
+while lo &lt; hi:
+    if arr[lo] + arr[hi] == target: return true
+    if arr[lo] + arr[hi] &lt; target: lo = lo + 1
+    else: hi = hi - 1
+return false</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Each iteration moves lo up OR hi down by 1 — the gap (hi−lo) shrinks by exactly 1 each time.</div>
+    <div class="step"><b>Step 2.</b> Starting gap is n−1, so at most n−1 iterations.</div>
+    <p class="ok-text">Θ(n).</p>
+  </div></details>
+
+  <!-- Q14 PC nested dependent -->
+  <p class="q"><span class="num">14</span>Time complexity? The inner loop multiplies. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>for i in 1..n:
+    j = i
+    while j &lt; n:
+        j = j * 2</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Outer runs n times. For a given i, j goes i → 2i → 4i … until ≥ n, which is about log₂(n/i) steps.</div>
+    <div class="step"><b>Step 2.</b> An upper bound: each inner loop is at most log₂n steps, so total ≤ n·log n.</div>
+    <p class="ok-text">O(n log n)</p> (a tighter sum of log(n/i) also gives O(n), but O(n log n) is the safe, commonly-accepted bound).
+  </div></details>
+
+  <!-- Q15 PC merge sort recognize -->
+  <p class="q"><span class="num">15</span>Identify this algorithm, give its recurrence, time, and space. <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>function sort(A):
+    if length(A) &lt;= 1: return A
+    mid = length(A)/2
+    L = sort(A[0..mid]); R = sort(A[mid..])
+    return merge(L, R)      # merge is O(n), uses a temp array</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> It's Merge Sort: 2 subproblems of size n/2 + O(n) merge. → <code>T(n)=2T(n/2)+n</code>.</div>
+    <div class="step"><b>Step 2 — Time.</b> c=log₂2=1, f(n)=n=n^c → Case 2 → <span class="ok-text">Θ(n log n)</span>.</div>
+    <div class="step"><b>Step 3 — Space.</b> Temp merge array O(n) dominates the O(log n) stack → <span class="ok-text">O(n)</span>.</div>
+  </div></details>
+
+  <!-- Q16 PC randomized -->
+  <p class="q"><span class="num">16</span>What is the EXPECTED number of iterations of this loop? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>repeat:
+    x = random integer in [1..6]   # a die roll
+until x == 6</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Each iteration "succeeds" (x==6) with probability p = 1/6, independently.</div>
+    <div class="step"><b>Step 2.</b> This is a geometric distribution; expected trials to first success = 1/p.</div>
+    <p class="ok-text">E = 1/(1/6) = 6 iterations.</p>
+  </div></details>
+
+  <!-- Q17 PC linearity -->
+  <p class="q"><span class="num">17</span>Array of n elements, each independently set to 1 with probability 1/3. What is the expected value of <code>count</code>? <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>count = 0
+for i in 1..n:
+    if random() &lt; 1/3:      # true with prob 1/3
+        count = count + 1</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1.</b> Let Xᵢ = 1 if iteration i increments. E[Xᵢ] = Pr = 1/3.</div>
+    <div class="step"><b>Step 2 — Linearity.</b> E[count] = Σ E[Xᵢ] = n × 1/3.</div>
+    <p class="ok-text">E[count] = n/3.</p>
+  </div></details>
+
+  <!-- Q18 PC accounting concept (mild code) -->
+  <p class="q"><span class="num">18</span>This stack's <code>multipop</code> can cost O(n). Using the accounting method, assign charges so each operation is amortized O(1). <span class="tag pc-tag">pseudocode</span></p>
+  <pre><code>push(x):      stack.add(x)                 # real cost 1
+multipop(k):  for _ in 1..min(k, size):    # real cost = items popped
+                  stack.removeTop()</code></pre>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <div class="step"><b>Step 1 — Charge.</b> push = 2, multipop = 0.</div>
+    <div class="step"><b>Step 2 — Store credit.</b> Of push's 2 coins, 1 pays the push now, 1 is saved on the pushed element as a "prepaid pop."</div>
+    <div class="step"><b>Step 3 — Invariant.</b> Every element on the stack carries 1 coin; when multipop removes it, that coin pays for the pop. Credit never goes negative.</div>
+    <p class="ok-text">Amortized O(1) per operation.</p>
+  </div></details>
+
+  <!-- Q19 conceptual -->
+  <p class="q"><span class="num">19</span>Explain why "the running time is <code>O(n²)</code>" and "the running time is <code>Θ(n²)</code>" are different claims. <span class="tag">concept</span></p>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <p><code>O(n²)</code> = upper bound only ("no worse than n²") — the true time could be smaller (e.g. actually n). <code>Θ(n²)</code> = tight bound ("grows exactly like n²", both upper and lower). Θ is the stronger, more precise claim; O is a guarantee ceiling.</p>
+  </div></details>
+
+  <!-- Q20 conceptual -->
+  <p class="q"><span class="num">20</span>A deterministic Quick Sort uses the first element as pivot. Why is a RANDOM pivot preferred, and what does it change? <span class="tag">concept</span></p>
+  <details class="answer"><summary>Reveal answer &amp; steps</summary><div class="body">
+    <p>With a fixed first-element pivot, a sorted (or reverse-sorted) input forces lopsided partitions (n−1 and 0) every level → worst case Θ(n²). A random pivot means no specific input can reliably trigger that, so the EXPECTED time becomes O(n log n). The worst case Θ(n²) still exists but is astronomically unlikely. (Correctness is unchanged — it's a Las Vegas algorithm.)</p>
+  </div></details>
+</section>
+
+<footer>Pseudocode Analysis · 20 questions (14 pseudocode + 6 conceptual) · hidden step-by-step answers · Good luck! 🍀</footer>
+</div>
+</body>
+</html>
